@@ -90,7 +90,7 @@ function App() {
                               DEVIL'S VAULT   
                           </div>
                           <p style={{ textAlign: 'center' }}>
-                             Version 1
+                             <b>Version 1</b>
                           </p>
                           <p style={{ textAlign: 'center' }}>
                              Deposit your DEVL in order to earn your share of the 3% tax in the form of BUSD.
@@ -112,7 +112,7 @@ function App() {
                               DEVIL LOCK  
                           </div>
                           <p style={{ textAlign: 'center' }}>
-                             Version 1
+                             <b>Version 1</b>
                           </p>
                           <p style={{ textAlign: 'center' }}>
                              Allows users to vote on when the contract can be unlocked, allowing the DEVL team to make changes to the token.
