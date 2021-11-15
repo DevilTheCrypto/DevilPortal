@@ -43,7 +43,7 @@ const Vault = (props) => {
       try{
 
       //LOAD Chad Vault
-      const devilVaultAddress = "0xE64353B243fFd8f644931D66c9325318552619BF";
+      const devilVaultAddress = "0x42B852a2F28B305B947A6C9a6bA44d6f7C759ff0";
       setDevilVaultAddress(devilVaultAddress);
       const devilVault = new web3.eth.Contract(
         DevilVaultAbi,
@@ -58,7 +58,7 @@ const Vault = (props) => {
       }
 
         //LOAD devilToken
-        const devilTokenAddress = "0xF4feB9b634cef66b5f75C7d03329c12038314Bc4";
+        const devilTokenAddress = "0xD280e0Fea29BcAe6ED9DD9fb4B9e5Fa90F5C249D";
         setDevilTokenAddress(devilTokenAddress);
         const devilToken = new web3.eth.Contract(
           DevilTokenAbi,

@@ -51,7 +51,7 @@ const Gateway = (props) => {
         setNetworkId(networkId);
 
         //LOAD devilToken
-        const devilTokenAddress = "0xF4feB9b634cef66b5f75C7d03329c12038314Bc4";
+        const devilTokenAddress = "0xD280e0Fea29BcAe6ED9DD9fb4B9e5Fa90F5C249D";
         setDevilTokenAddress(devilTokenAddress);
         const devilToken = new web3.eth.Contract(
           DevilTokenAbi,
@@ -61,7 +61,7 @@ const Gateway = (props) => {
         console.log(devilToken);
 
         //LOAD devil gateway
-        const devilGatewayAddress = "0xF52F0649C22557B9f7336af95D4F1f588160fef6";
+        const devilGatewayAddress = "0x1C781CE11522dCDCc1C082606Eb3c67231624FEd";
         setDevilGatewayAddress(devilGatewayAddress);
         const devilGateway = new web3.eth.Contract(
           DevilGatewayAbi,

@@ -55,7 +55,7 @@ const Governance = (props) => {
   
         try{
         //LOAD Devil lock
-        const devilLockAddress = "0x5A0431d5A43dFbCebe947De58Fd07EdF26333F02";
+        const devilLockAddress = "0xd39217757AfAFd226AeDCA1Bd20F34A97ECbeb50";
         setDevilLockAddress(devilLockAddress);
         const devilLock = new web3.eth.Contract(
           DevilLockAbi,
@@ -70,7 +70,7 @@ const Governance = (props) => {
         }
 
         //LOAD devilToken
-        const devilTokenAddress = "0x4cd756344dd538bBE311e2114c16c26872a4E6E6";
+        const devilTokenAddress = "0xD280e0Fea29BcAe6ED9DD9fb4B9e5Fa90F5C249D";
         setDevilTokenAddress(devilTokenAddress);
         const devilToken = new web3.eth.Contract(
           DevilTokenAbi,
