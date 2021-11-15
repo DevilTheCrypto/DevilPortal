@@ -70,7 +70,7 @@ const Governance = (props) => {
         }
 
         //LOAD devilToken
-        const devilTokenAddress = "0x5Cd12C61999a7dFd4Dca8a1ee2773A4bb3d0DC70";
+        const devilTokenAddress = "0x4cd756344dd538bBE311e2114c16c26872a4E6E6";
         setDevilTokenAddress(devilTokenAddress);
         const devilToken = new web3.eth.Contract(
           DevilTokenAbi,
@@ -245,7 +245,7 @@ const Governance = (props) => {
                                     <p> {totalSupportVotes} </p>
                             </div>
                             <div class="col-4 justify-content-center">
-                                {devilLockStatus === true ? <img class="mt-xxl-4" src="assets/media/devl_locked_4.png" alt="" width="674" height="572"/> : <img class="mt-xxl-4" src="assets/media/devl_locked_3.png" alt="" width="674" height="572"/> }
+                                {devilLockStatus === false ? <img class="mt-xxl-4" src="assets/media/devl_locked_4.png" alt="" width="674" height="572"/> : <img class="mt-xxl-4" src="assets/media/devl_locked_3.png" alt="" width="674" height="572"/> }
                             </div>
                                 <div class="col-4">
                                     <div class="h3" style={{ textAlign: 'right' }}>

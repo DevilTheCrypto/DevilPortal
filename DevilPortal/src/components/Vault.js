@@ -2,8 +2,8 @@ import React, { Component, useEffect, useState, setState, useRef } from "react";
 import Web3 from "web3";
 import "./App.css";
 import DevilVaultAbi from "../remix_abis/DevilVault.json";
-import TetherAbi from "../remix_abis/Tether.json"
-import RwdAbi from "../remix_abis/RWD.json"
+import TetherAbi from "../remix_abis/Tether.json";
+import RwdAbi from "../remix_abis/RWD.json";
 import DevilTokenAbi from "../remix_abis/DevilToken.json";
 
 const Vault = (props) => {
@@ -24,7 +24,7 @@ const Vault = (props) => {
   const [globalStakingBalance, setGlobalStakingBalance] = React.useState("0");
   const [pendingUserRewards, setPendingUserRewards] = React.useState("0");
   const [symbol, setSymbol] = React.useState([undefined]);
-  
+  const [rangeval, setRangeval] = useState(null);
   const [updateState, setUpdateState] = React.useState(false);
   const inputRef = useRef();
 
@@ -41,8 +41,9 @@ const Vault = (props) => {
       setNetworkId(networkId);
 
       try{
+
       //LOAD Chad Vault
-      const devilVaultAddress = "0x6c8F1e3AE632f32f8909fca798a1eBb5E114276B";
+      const devilVaultAddress = "0xE64353B243fFd8f644931D66c9325318552619BF";
       setDevilVaultAddress(devilVaultAddress);
       const devilVault = new web3.eth.Contract(
         DevilVaultAbi,
@@ -52,12 +53,12 @@ const Vault = (props) => {
       console.log(devilVault);
       } catch (error) {
         alert(
-          'Failed to load chadvault.',
+          'Failed to load devil vault.',
               );
       }
 
         //LOAD devilToken
-        const devilTokenAddress = "0x5Cd12C61999a7dFd4Dca8a1ee2773A4bb3d0DC70";
+        const devilTokenAddress = "0xF4feB9b634cef66b5f75C7d03329c12038314Bc4";
         setDevilTokenAddress(devilTokenAddress);
         const devilToken = new web3.eth.Contract(
           DevilTokenAbi,
@@ -67,7 +68,7 @@ const Vault = (props) => {
         console.log(devilToken);
 
         //LOAD RWD
-        const rwdAddress = "0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7";
+        const rwdAddress = "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56";
         setRwdAddress(rwdAddress);
         const rwd = new web3.eth.Contract(
           RwdAbi,
@@ -148,13 +149,10 @@ const Vault = (props) => {
 
   const stakeTokensVault = async (amount) => {
     setUpdateState(true)
-    // devilToken.methods.approve(devilVault._address, amount).send({from: account}).on('transactionHash', (hash) => {
     devilToken.methods.transfer(devilVault._address, amount).send({from: account}).on('transactionHash', (hash) => { 
     devilVault.methods.stake(amount).send({from: account}).on('transactionHash', (hash) => { 
       })
     })
-  // })
-
 }
 
   const unstakeTokensVault = (amount) => {
@@ -181,18 +179,18 @@ const Vault = (props) => {
                 <div class="row row-30 justify-content-center">
                     <div class="col-4">
                         <div class="h3">
-                            GLOBAL STAKED   
+                            TOTAL STAKED   
                         </div>
-                            <p> {window.web3.utils.fromWei(globalStakingBalance, 'Ether')} DEVL </p>
+                            <p> {parseFloat(window.web3.utils.fromWei(globalStakingBalance, 'Ether')).toFixed(5)} DEVL </p>
                     </div>
                     <div class="col-4 justify-content-center">
-                        <img class="mt-xxl-4" src="assets/media/DEVIL_logo_red.png" alt="" width="674" height="572"/>
+                        <img class="mt-xxl-4" src="assets/media/DEVIL_logo_red_centered.png" alt="" width="674" height="572"/>
                     </div>
                         <div class="col-4">
                             <div class="h3" style={{ textAlign: 'right' }}>
-                                GLOBAL REWARDS   
+                              TOTAL REWARDS   
                             </div>
-                                <p style={{ textAlign: 'right' }}>{window.web3.utils.fromWei(lifetimeRewardsGiven, 'Ether')} BUSD </p>
+                                <p style={{ textAlign: 'right' }}>{parseFloat(window.web3.utils.fromWei(lifetimeRewardsGiven, 'Ether')).toFixed(5)} BUSD </p>
                         </div>
                 </div>
                 <div class="row row-30 justify-content-center">
@@ -201,11 +199,11 @@ const Vault = (props) => {
                             USER 
                             STAKED   
                         </div>
-                            <p> {window.web3.utils.fromWei(amountStaked, 'Ether')} DEVL </p>
+                            <p> {parseFloat(window.web3.utils.fromWei(amountStaked, 'Ether')).toFixed(5)} DEVL </p>
                     </div>
                     <div class="col-4 justify-content-center">
                         <form class="block block-sm" data-np-checked="1">
-                            <p>Balance: {window.web3.utils.fromWei(devilTokenBalance, 'Ether')} </p>
+                            <p>Balance: {parseFloat(window.web3.utils.fromWei(devilTokenBalance, 'Ether')).toFixed(5)}</p>
                             <input type="number" ref={inputRef} className="form-control" />
                                 
                                 <button 
@@ -240,14 +238,14 @@ const Vault = (props) => {
                                     claimRewards()
                                     }}
                                     className='btn btn-primary btn-lg btn-block'>CLAIM
-                                </button>
+                                </button>                              
                         </form>
                     </div>
                         <div class="col-4">
                             <div class="h3" style={{ textAlign: 'right' }}>
-                                PENDING REWARDS   
+                                USER REWARDS   
                             </div>
-                                <p style={{ textAlign: 'right' }}> {window.web3.utils.fromWei(pendingUserRewards, 'Ether')} BUSD </p>
+                                <p style={{ textAlign: 'right' }}> {parseFloat(window.web3.utils.fromWei(pendingUserRewards, 'Ether')).toFixed(5)} BUSD </p>
                         </div>
                 </div>
                 {/* <div class="row row-30 justify-content-left">

@@ -2,13 +2,14 @@ import React, { Component, useEffect, useState, setState } from "react";
 import Navbar from "./Navbar";
 import "./App.css";
 import Vault from "./Vault.js";
+import Gateway from "./Gateway"
 import { useWeb3React } from "@web3-react/core";
 import useAuth from "../hooks/useAuth";
 import { useWalletModal } from "@pancakeswap-libs/uikit";
 import Governance from "./Governance";
 
 function App() {
-   
+
   const { login, logout } = useAuth();
   const { account, web3 } = useWeb3React();
   const { onPresentConnectModal, onPresentAccountModal } = useWalletModal(
@@ -33,23 +34,22 @@ function App() {
                 <div class="tab tab-line">
                   <ul class="nav nav-line biggest">
                     <li class="nav-item" role="presentation">
-                      <a
-                        class="nav-link active show"
-                        href="#tabs-1-1"
-                        data-toggle="tab">
-                        Devil's Vault
+                      <a class="nav-link active show" href="#tabs-1-1" data-toggle="tab">
+                        Gateway
                       </a>
                     </li>
                     <li class="nav-item" role="presentation">
                       <a class="nav-link" href="#tabs-1-2" data-toggle="tab">
-                        Governance
+                        Vault
                       </a>
                     </li>
                     <li class="nav-item" role="presentation">
-                      <a
-                        class="nav-link active show"
-                        href="#tabs-1-3"
-                        data-toggle="tab">
+                      <a class="nav-link" href="#tabs-1-3" data-toggle="tab">
+                        Lock
+                      </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                      <a class="nav-link" href="#tabs-1-4" data-toggle="tab">
                         Information
                       </a>
                     </li>
@@ -62,11 +62,15 @@ function App() {
                       <div class="row row-30 justify-content-center">
                         {/* <p><p2>{account}</p2></p> */}
                         <p></p>
-                      </div>  
-                        <Vault
+                      </div>
+                        <Gateway
                           account={account}
                           web3={web3}
-                        />
+                        />  
+                        {/* <Vault
+                          account={account}
+                          web3={web3}
+                        /> */}
                       </div>
                       {/* <!-- Tab panes--> */}
                     </div>
@@ -74,16 +78,25 @@ function App() {
                   <div class="tab-pane fade" id="tabs-1-2">
                     <div class="box px-xl-4 px-xxl-4">
                     <div className="content">
-                      <Governance 
-                        account={account}
-                        web3={web3}
-                      />
+                      <Vault
+                          account={account}
+                          web3={web3}
+                        />
                     </div>
                     </div>
                   </div>
                   <div class="tab-pane fade" id="tabs-1-3">
                     <div class="box px-xl-4 px-xxl-4">
                     <div className="content">
+                      <Governance 
+                          account={account}
+                          web3={web3}
+                        />
+                    </div>
+                    </div>
+                  </div>
+                  <div class="tab-pane fade" id="tabs-1-4">
+                    <div class="box px-xl-4 px-xxl-4">
                       <div class="row row-30 justify-content-center">
                         <div class="col-10 justify-content-center">
                           <div class="h3" style={{ textAlign: 'center' }}>
@@ -130,7 +143,7 @@ function App() {
                       </div>
                     </div>
                     </div>
-                  </div>
+                  
                 </div>
               </div>
             </section>
