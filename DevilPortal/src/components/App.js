@@ -142,6 +142,28 @@ function App() {
                           </p>
                         </div>
                       </div>
+                      <div class="row row-30 justify-content-center">
+                        <div class="col-10 justify-content-center">
+                          <div class="h3" style={{ textAlign: 'center' }}>
+                              DEVIL GATEWAY 
+                          </div>
+                          <p style={{ textAlign: 'center' }}>
+                             <b>Version 1</b>
+                          </p>
+                          <p style={{ textAlign: 'center' }}>
+                             To buy DEVL - enter the amount of BNB you wish to use.
+                          </p>
+                          <p style={{ textAlign: 'center' }}>
+                             To sell DEVL - enter the amount of DEVL you wish to sell.
+                          </p>
+                          <p style={{ textAlign: 'center' }}>
+                             To onramp fiat for BSC BNB (BEP-20), click "Buy Crypto"
+                          </p>
+                          <p style={{ textAlign: 'center' }}>
+                             Note: Price information coming after launch when connection available.
+                          </p>
+                        </div>
+                      </div>
                     </div>
                     </div>
                   

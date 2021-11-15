@@ -160,7 +160,7 @@ const sellDevl = (amount) => {
                     </div>
                     <div class="col-2 justify-content-center">
                         <div>
-                          <img class="mt-xxl-4" style={{alignContent: 'center' }} src="assets/media/DEVIL_logo_red_centered.png" alt="" width="150" height="150" />
+                          <img class="mt-xxl-4" src="assets/media/DEVIL_logo_red_centered.png" alt="" width="300" height="300" />
                         </div>
                         <div>
                           <p style={{ textAlign: 'center' }}>Balance</p>  
@@ -169,14 +169,14 @@ const sellDevl = (amount) => {
                     </div>
                     <div class="col-4 justify-content-center">
                         <div class="row row-30 justify-content-center">
-                          {/* <div class="h4" style={{ textAlign: 'center' }}>
+                          <div class="h4" style={{ textAlign: 'center' }}>
                            PRICE
-                          </div> */}
+                          </div>
                         </div>
                         <div class="row row-30 justify-content-center">
                           <div>
-                            {/* <p style={{ textAlign: 'center' }}>N/A</p>
-                            <p style={{ textAlign: 'center' }}>N/A</p> */}
+                            {/* {/* <p style={{ textAlign: 'center' }}>N/A</p> */}
+                            <p style={{ textAlign: 'center' }}>Coming Soon</p>
                           </div>
                       </div>
                         <div class="row row-30 justify-content-center">
