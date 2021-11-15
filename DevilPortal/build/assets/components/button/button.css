@@ -145,7 +145,7 @@
 .btn:hover, .btn.hover, .btn:active, .btn.active {
 	text-decoration: none;
 	background-position: 100% 100%, 0% 0%;
-	color: #d7e1ec;
+	color: #ff0000;
 	box-shadow: 8px 8px 22px rgba(21, 22, 24, 0.38), -4px -2px 16px rgba(195, 200, 205, 0.08), inset -2px -2px 4px rgba(54, 54, 57, 0.16), inset 2px 2px 4px rgba(30, 30, 32, 0.18);
 }
 
@@ -194,6 +194,7 @@
 	font-size: 1.0625rem;
 	line-height: 1.65;
 	border-radius: 0.9375rem;
+	/* text-shadow:0 2px #2c384000, 0 0 10px #740000, 0 0 5px #cc0000, 0 0 1px #f30000, 0 0 35px #bf0000, 0 0 3px #ed0000 */
 }
 
 .btn-group > .btn {

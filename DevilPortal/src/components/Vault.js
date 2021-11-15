@@ -29,7 +29,7 @@ const Vault = (props) => {
   const inputRef = useRef();
 
   let account = props.account
-
+  
   window.web3 = new Web3(window.web3.currentProvider);
 
   useEffect(() => {

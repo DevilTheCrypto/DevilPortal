@@ -18,6 +18,7 @@ function App() {
     account || undefined
   );
   console.log(account);
+  
 
   return (
     <>
