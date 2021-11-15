@@ -40,7 +40,7 @@ self.__precacheManifest = [
     "url": "/DevilPortal/static/js/runtime~main.490d8dde.js"
   },
   {
-    "revision": "71ccd0fbde848e0ac3975060c3964f1e",
+    "revision": "d5ef3d7d81cfd8b7f486677b2ac09755",
     "url": "/DevilPortal/index.html"
   }
 ];
