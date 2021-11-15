@@ -53,6 +53,7 @@
 .section-one-screen {
   min-height: 100vh;
   max-width: 80vw;
+  min-width: 450px;
   position: relative;
   left: 9%;
  
