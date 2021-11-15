@@ -173,6 +173,7 @@ const Vault = (props) => {
                     <div class="col-4">
                         <div>
                             Status: <b>{updateState ? 'loading' : 'complete'}</b>
+                            <p>DO NOT STAKE VAULT IS PAUSED FOR WITHDRAWL DUE TO EXPLOIT. TEAM IS FIXING IT. </p>
                         </div>
                     </div>
                   </div>
@@ -213,7 +214,7 @@ const Vault = (props) => {
                                     let amount
                                     amount = inputRef.current.value.toString() 
                                     amount = window.web3.utils.toWei(amount, 'Ether')
-                                    stakeTokensVault(amount)
+                                    // stakeTokensVault(amount)
                                     }}
                                     className='btn btn-primary btn-lg btn-block'>DEPOSIT
                                 </button>
