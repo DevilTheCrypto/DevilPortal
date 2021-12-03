@@ -26,24 +26,26 @@ const Vault = (props) => {
   const [symbol, setSymbol] = React.useState([undefined]);
   const [rangeval, setRangeval] = useState(null);
   const [updateState, setUpdateState] = React.useState(false);
+  const [inputValue, setInputValue] = React.useState(0);
   const inputRef = useRef();
 
   let account = props.account
-  
-  window.web3 = new Web3(window.web3.currentProvider);
+  let Web3ReactProvider = props.Web3ReactProvider;
 
   useEffect(() => {
+
     
     const init = async () => {
 
-      const web3 = window.web3;
+      const web3 = await window.web3;
+      const provider = await props.Web3ReactProvider;
       const networkId = await web3.eth.net.getId();
       setNetworkId(networkId);
 
       try{
 
-      //LOAD Chad Vault
-      const devilVaultAddress = "0x42B852a2F28B305B947A6C9a6bA44d6f7C759ff0";
+      //LOAD Devil Vault
+      const devilVaultAddress = "0xe12f2f9Bf3939BCe8F41CAd1247924a0B2dda942";
       setDevilVaultAddress(devilVaultAddress);
       const devilVault = new web3.eth.Contract(
         DevilVaultAbi,
@@ -58,7 +60,7 @@ const Vault = (props) => {
       }
 
         //LOAD devilToken
-        const devilTokenAddress = "0xD280e0Fea29BcAe6ED9DD9fb4B9e5Fa90F5C249D";
+        const devilTokenAddress = "0x65aEd7F90a0cF876D496d8093D3F89748ba66b57";
         setDevilTokenAddress(devilTokenAddress);
         const devilToken = new web3.eth.Contract(
           DevilTokenAbi,
@@ -68,7 +70,7 @@ const Vault = (props) => {
         console.log(devilToken);
 
         //LOAD RWD
-        const rwdAddress = "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56";
+        const rwdAddress = "0x19027aEf0fDB5C30b3dC4E863fccFC6F05aCf184";
         setRwdAddress(rwdAddress);
         const rwd = new web3.eth.Contract(
           RwdAbi,
@@ -83,16 +85,16 @@ const Vault = (props) => {
           let devilTokenBalance = await devilToken.methods.balanceOf(account).call();
           setDevilTokenBalance(devilTokenBalance.toString());
           
-          const amountStaked = await devilVault.methods.amountStaked(account).call();
+          const amountStaked = await devilVault.methods.getUserStaked(account).call();
           setAmountStaked(amountStaked.toString());
 
-          let globalStakingBalance = await devilVault.methods.globalStakingTokenBalance().call();
+          let globalStakingBalance = await devilVault.methods.getTotalStaked().call();
           setGlobalStakingBalance(globalStakingBalance.toString());
 
-          let lifetimeRewardsGiven = await devilVault.methods.lifetimeRewardsGiven().call();
-          setLifetimeRewardsGiven(lifetimeRewardsGiven.toString());
+          // let lifetimeRewardsGiven = await devilVault.methods.getLifetimeRewards(account).call();
+          // setLifetimeRewardsGiven(lifetimeRewardsGiven.toString());
 
-          let pendingUserRewards = await devilVault.methods.rewardsPending(account).call();
+          let pendingUserRewards = await devilVault.methods.rewardsBusd(account).call();
           setPendingUserRewards(pendingUserRewards.toString());
 
           let symbol = await rwd.methods.symbol().call();
@@ -108,11 +110,15 @@ const Vault = (props) => {
             .on('data', event => update()
             );
 
-          devilVault.events.RewardClaimed({fromBlock: 0})
+          devilVault.events.RewardPaidBusd({fromBlock: 0})
+            .on('data', event => update()
+            );
+
+            devilVault.events.RewardPaidDevl({fromBlock: 0})
             .on('data', event => update()
             );
           
-          devilVault.events.RewardDistributed({fromBlock: 0})
+          devilVault.events.RewardAddedBusd({fromBlock: 0})
             .on('data', event => update()
             );
 
@@ -130,17 +136,17 @@ const Vault = (props) => {
 
       let devilTokenBalance = await devilToken.methods.balanceOf(account).call();
       setDevilTokenBalance(devilTokenBalance.toString());
-      
-      let amountStaked = await devilVault.methods.amountStaked(account).call();
+          
+      const amountStaked = await devilVault.methods.getUserStaked(account).call();
       setAmountStaked(amountStaked.toString());
 
-      let globalStakingBalance = await devilVault.methods.globalStakingTokenBalance().call();
+      let globalStakingBalance = await devilVault.methods.getTotalStaked().call();
       setGlobalStakingBalance(globalStakingBalance.toString());
 
-      let lifetimeRewardsGiven = await devilVault.methods.lifetimeRewardsGiven().call();
-      setLifetimeRewardsGiven(lifetimeRewardsGiven.toString());
+      // let lifetimeRewardsGiven = await devilVault.methods.getLifetimeRewards(account).call();
+      // setLifetimeRewardsGiven(lifetimeRewardsGiven.toString());
 
-      let pendingUserRewards = await devilVault.methods.rewardsPending(account).call();
+      let pendingUserRewards = await devilVault.methods.rewardsBusd(account).call();
       setPendingUserRewards(pendingUserRewards.toString());
 
     }
@@ -149,6 +155,7 @@ const Vault = (props) => {
 
   const stakeTokensVault = async (amount) => {
     setUpdateState(true)
+    amount = window.web3.utils.toWei(amount, 'Ether')
     devilToken.methods.transfer(devilVault._address, amount).send({from: account}).on('transactionHash', (hash) => { 
     devilVault.methods.stake(amount).send({from: account}).on('transactionHash', (hash) => { 
       })
@@ -157,6 +164,7 @@ const Vault = (props) => {
 
   const unstakeTokensVault = (amount) => {
   setUpdateState(true)
+  amount = window.web3.utils.toWei(amount, 'Ether')
   devilVault.methods.withdraw(amount).send({from: account}).on('transactionHash', (hash) => {
   })
 }
@@ -204,8 +212,21 @@ const Vault = (props) => {
                     </div>
                     <div class="col-4 justify-content-center">
                         <form class="block block-sm" data-np-checked="1">
-                            <p>Balance: {parseFloat(window.web3.utils.fromWei(devilTokenBalance, 'Ether')).toFixed(5)}</p>
-                            <input type="number" ref={inputRef} className="form-control" />
+                                <p>Balance: {parseFloat(window.web3.utils.fromWei(devilTokenBalance, 'Ether')).toFixed(5)}</p>  
+                            {/* <input type="number" ref={inputRef} className="form-control"/> */}
+                            <input type="number" value={inputValue} onChange={e => setInputValue(e.target.value)} className="form-control"/> 
+                                
+                                <button 
+                                  class="link"
+                                  onClick={(event) => {
+                                  event.preventDefault()
+                                  let amount
+                                  amount = devilTokenBalance.toString() 
+                                  amount = window.web3.utils.fromWei(amount, 'Ether')
+                                  setInputValue(amount)
+                                  }}
+                                  >Max
+                                </button>
                                 
                                 <button 
                                     type='submit'
@@ -213,11 +234,11 @@ const Vault = (props) => {
                                     event.preventDefault()
                                     let amount
                                     amount = inputRef.current.value.toString() 
-                                    amount = window.web3.utils.toWei(amount, 'Ether')
-                                    // stakeTokensVault(amount)
+                                    stakeTokensVault(amount)
                                     }}
                                     className='btn btn-primary btn-lg btn-block'>DEPOSIT
                                 </button>
+                                
                                 
                             
                                 <button 
@@ -226,7 +247,6 @@ const Vault = (props) => {
                                     event.preventDefault()
                                     let amount
                                     amount = inputRef.current.value.toString()
-                                    amount = window.web3.utils.toWei(amount, 'Ether')
                                     unstakeTokensVault(amount)
                                     }}
                                     className='btn btn-primary btn-lg btn-block'>WITHDRAW

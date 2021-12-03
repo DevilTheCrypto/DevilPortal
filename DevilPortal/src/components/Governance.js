@@ -43,15 +43,16 @@ const Governance = (props) => {
     const inputRef = useRef()
     let account = props.account
   
-    window.web3 = new Web3(window.web3.currentProvider);
-  
     useEffect(() => {
       
       const init = async () => {
-  
-        const web3 = window.web3;
-        const networkId = await web3.eth.net.getId();
-        setNetworkId(networkId);
+
+        window.web3 = await new Web3(window.ethereum);
+        const web3 = await window.web3;
+        if(account !== undefined) {
+            const networkId = await web3.eth.net.getId();
+            setNetworkId(networkId);
+        }
   
         try{
         //LOAD Devil lock

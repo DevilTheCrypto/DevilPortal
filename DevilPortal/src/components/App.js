@@ -7,18 +7,19 @@ import { useWeb3React } from "@web3-react/core";
 import useAuth from "../hooks/useAuth";
 import { useWalletModal } from "@pancakeswap-libs/uikit";
 import Governance from "./Governance";
+import { Web3Provider } from "@ethersproject/providers";
+import Web3 from "web3";
 
 function App() {
 
   const { login, logout } = useAuth();
-  const { account, web3 } = useWeb3React();
+  const { account, web3, Web3ReactProvider } = useWeb3React();
   const { onPresentConnectModal, onPresentAccountModal } = useWalletModal(
     login,
     logout,
     account || undefined
   );
   console.log(account);
-  
 
   return (
     <>
@@ -27,6 +28,7 @@ function App() {
           account={account}
           onPresentConnectModal={onPresentConnectModal}
           onPresentAccountModal={onPresentAccountModal}
+          Web3ReactProvider={Web3ReactProvider}
         />
         <main role="main" className="col-lg-12 ml-auto mr-auto">
           <div class="page">
@@ -177,4 +179,5 @@ function App() {
   );
 }
 
+// }
 export { App };

@@ -40,15 +40,18 @@ const Gateway = (props) => {
 
   let account = props.account
 
-  window.web3 = new Web3(window.web3.currentProvider);
+  window.web3 = new Web3(window.ethereum);
+
 
   useEffect(() => {
     
-    const init = async () => {
-
-        const web3 = window.web3;
-        const networkId = await web3.eth.net.getId();
-        setNetworkId(networkId);
+      const init = async () => {
+        
+        const web3 = await window.web3;
+        if(account !== undefined){
+          const networkId = await web3.eth.net.getId();
+          setNetworkId(networkId);
+        }
 
         //LOAD devilToken
         const devilTokenAddress = "0xD280e0Fea29BcAe6ED9DD9fb4B9e5Fa90F5C249D";
@@ -127,6 +130,8 @@ const sellDevl = (amount) => {
   devilGateway.methods.sellDevl(amount).send({gasLimit: 10000000, from: account})
   })
 }
+
+
         return (
             <div> 
 
@@ -334,8 +339,6 @@ const sellDevl = (amount) => {
 //                               </div>
 //                           </div>
 //                       </div> */}
-
-
 
 export default (Gateway);
 
