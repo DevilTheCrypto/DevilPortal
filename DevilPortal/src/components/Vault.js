@@ -30,17 +30,18 @@ const Vault = (props) => {
   const inputRef = useRef();
 
   let account = props.account
-  let Web3ReactProvider = props.Web3ReactProvider;
 
   useEffect(() => {
 
     
     const init = async () => {
 
-      const web3 = await window.web3;
-      const provider = await props.Web3ReactProvider;
-      const networkId = await web3.eth.net.getId();
-      setNetworkId(networkId);
+      window.web3 = await new Web3(window.ethereum);
+        const web3 = await window.web3;
+        if(account !== undefined) {
+            const networkId = await web3.eth.net.getId();
+            setNetworkId(networkId);
+        }
 
       try{
 
