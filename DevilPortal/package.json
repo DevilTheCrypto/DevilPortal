@@ -29,6 +29,7 @@
     "chai": "4.2.0",
     "chai-as-promised": "7.1.1",
     "chai-bignumber": "3.0.0",
+    "coingecko-api": "^1.0.10",
     "ethers": "^5.4.6",
     "identicon.js": "^2.3.3",
     "react": "^16.8.4",

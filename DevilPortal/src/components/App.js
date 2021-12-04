@@ -10,10 +10,14 @@ import Governance from "./Governance";
 import { Web3Provider } from "@ethersproject/providers";
 import Web3 from "web3";
 
+//Web3Modal
+import Web3Modal from "web3modal";
+import WalletConnectProvider from "@walletconnect/web3-provider";
+
 function App() {
 
   const { login, logout } = useAuth();
-  const { account, web3, Web3ReactProvider } = useWeb3React();
+  const { active, account, library, connector, activate, deactivate, web3} = useWeb3React();
   const { onPresentConnectModal, onPresentAccountModal } = useWalletModal(
     login,
     logout,
@@ -28,7 +32,6 @@ function App() {
           account={account}
           onPresentConnectModal={onPresentConnectModal}
           onPresentAccountModal={onPresentAccountModal}
-          Web3ReactProvider={Web3ReactProvider}
         />
         <main role="main" className="col-lg-12 ml-auto mr-auto">
           <div class="page">
@@ -70,10 +73,6 @@ function App() {
                           account={account}
                           web3={web3}
                         />  
-                        {/* <Vault
-                          account={account}
-                          web3={web3}
-                        /> */}
                       </div>
                       {/* <!-- Tab panes--> */}
                     </div>
@@ -91,10 +90,10 @@ function App() {
                   <div class="tab-pane fade" id="tabs-1-3">
                     <div class="box px-xl-4 px-xxl-4">
                     <div className="content">
-                      <Governance 
+                      {/* <Governance 
                           account={account}
                           web3={web3}
-                        />
+                        /> */}
                     </div>
                     </div>
                   </div>

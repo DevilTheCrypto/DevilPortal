@@ -3,10 +3,12 @@ import Web3 from "web3";
 import "./App.css";
 import DevilTokenAbi from "../remix_abis/DevilToken.json";
 import DevilGatewayAbi from "../remix_abis/Gateway.json";
+import GatewayTransferAbi from "../remix_abis/GatewayTransfer.json";
 import OnramperWidget from "@onramper/widget";
 import RwdAbi from "../remix_abis/RWD.json";
 import OnramperWidgetContainer from "./Onboarder.js"
 import RangeSliderDEVL from "./RangeSlider";
+import { useWeb3React } from "@web3-react/core";
 
 const Gateway = (props) => {
 
@@ -20,6 +22,8 @@ const Gateway = (props) => {
   const [devilVaultAddress, setDevilVaultAddress] = React.useState("");
   const [devilGateway, setDevilGateway] = React.useState([undefined]);
   const [devilGatewayAddress, setDevilGatewayAddress] = React.useState("");
+  const [gatewayTransfer, setGatewayTransfer] = React.useState([undefined]);
+  const [gatewayTransferAddress, setGatewayTransferAddress] = React.useState("");
   const [devilTokenBalance, setDevilTokenBalance] = React.useState("0");
   const [rwdTokenBalance, setRwdTokenBalance] = React.useState("0");
   const [stakingBalance, setStakingBalance] = React.useState("0");
@@ -33,13 +37,16 @@ const Gateway = (props) => {
   const [updateState, setUpdateState] = React.useState(false);
   const inputRef = useRef();
   const inputRef2 = useRef();
+  const [inputValueTransfer, setInputValueTransfer] = React.useState(0);
+  const [inputValueBuy, setInputValueBuy] = React.useState(0);
+  const [inputValueSell, setInputValueSell] = React.useState(0);
 
   const APIKEY = process.env.REACT_APP_API_KEY
 
+  //Web3React
+  const { active, account, library, connector, activate, deactivate, web3} = useWeb3React();
 
-
-  let account = props.account
-
+  // let newWeb3 = props.web3;
   window.web3 = new Web3(window.ethereum);
 
 
@@ -54,7 +61,7 @@ const Gateway = (props) => {
         }
 
         //LOAD devilToken
-        const devilTokenAddress = "0xD280e0Fea29BcAe6ED9DD9fb4B9e5Fa90F5C249D";
+        const devilTokenAddress = "0x65aEd7F90a0cF876D496d8093D3F89748ba66b57";
         setDevilTokenAddress(devilTokenAddress);
         const devilToken = new web3.eth.Contract(
           DevilTokenAbi,
@@ -72,6 +79,16 @@ const Gateway = (props) => {
         );
         setDevilGateway(devilGateway);
         console.log(devilGateway);
+
+        //LOAD devil gateway transfer
+        const gatewayTransferAddress = "0x44B8b405051b3cB857dF0e2F1997140f3AFE8764";
+        setGatewayTransferAddress(gatewayTransferAddress);
+        const gatewayTransfer = new web3.eth.Contract(
+          GatewayTransferAbi,
+          gatewayTransferAddress
+        );
+        setGatewayTransfer(gatewayTransfer);
+        console.log(gatewayTransfer);
 
         //Load our staking state and other account data
 
@@ -126,8 +143,17 @@ const buyDevl = (amount) => {
 
 const sellDevl = (amount) => {
   setUpdateState(true)
+  amount = window.web3.utils.toWei(amount, 'Ether')
   devilToken.methods.approve(devilGateway._address, amount).send({from: account}).on('transactionHash', (hash) => {
   devilGateway.methods.sellDevl(amount).send({gasLimit: 10000000, from: account})
+  })
+}
+
+const transferDevl = (amount, receiver) => {
+  setUpdateState(true)
+  amount = window.web3.utils.toWei(amount, 'Ether')
+  devilToken.methods.approve(devilGateway._address, amount).send({from: account}).on('transactionHash', (hash) => {
+  gatewayTransfer.methods.transferDevl(amount, receiver).send({from: account})
   })
 }
 
@@ -139,7 +165,7 @@ const sellDevl = (amount) => {
                     <div class="col-3">
                         <div>
                             Status: <b>{updateState ? 'loading' : 'complete'}</b>
-                            
+                          
                         </div>
                     </div>
                     <div class="col-3">
@@ -208,7 +234,7 @@ const sellDevl = (amount) => {
                   <div class="col-2"></div>
                   <div class="col-3 justify-content-center">
                           <form class="block block-sm" data-np-checked="1">
-                              <input type="number" ref={inputRef} className="form-control"/>
+                          <input type="number" value={inputValueBuy} onChange={e => setInputValueBuy(e.target.value)} className="form-control"/>
                               {/* <RangeSliderDEVL
                               ethBalance = {ethBalance}
                               devilTokenBalance = {devilTokenBalance}
@@ -222,12 +248,24 @@ const sellDevl = (amount) => {
                               }}
                               style={{ textAlign: 'right' }}>Max
                               </p> */}
+
+                                <button 
+                                  class="link"
+                                  onClick={(event) => {
+                                  event.preventDefault()
+                                  let amount
+                                  amount = devilTokenBalance.toString() 
+                                  amount = window.web3.utils.fromWei(amount, 'Ether')
+                                  setInputValueBuy(amount)
+                                  }}
+                                  >Max
+                                </button>
                                   <button 
                                       type='submit'
                                       onClick={(event) => {
                                       event.preventDefault()
                                       let amount
-                                      amount = inputRef.current.value.toString() 
+                                      amount = inputValueBuy
                                       amount = window.web3.utils.toWei(amount, 'Ether')
                                       buyDevl(amount)
                                       }}
@@ -239,14 +277,25 @@ const sellDevl = (amount) => {
                         <div class="col-2"></div>
                         <div class="col-3 justify-content-center">
                         <form class="block block-sm" data-np-checked="1">
-                            <input type="number" ref={inputRef} className="form-control"/>
+                            <input type="number" value={inputValueSell} onChange={e => setInputValueSell(e.target.value)} className="form-control"/>
+                                <button 
+                                  class="link"
+                                  onClick={(event) => {
+                                  event.preventDefault()
+                                  let amount
+                                  amount = devilTokenBalance.toString() 
+                                  amount = window.web3.utils.fromWei(amount, 'Ether')
+                                  setInputValueSell(amount)
+                                  }}
+                                  >Max
+                                </button>
                             <button 
                                     type='submit'
                                     onClick={(event) => {
                                     event.preventDefault()
                                     let amount
-                                    amount = inputRef.current.value.toString() 
-                                    amount = window.web3.utils.toWei(amount, 'Ether')
+                                    amount = inputValueSell.
+                                    // amount = window.web3.utils.toWei(amount, 'Ether')
                                     sellDevl(amount)
                                     }}
                                     className='btn btn-primary btn-lg btn-block'>SELL DEVL
@@ -266,6 +315,48 @@ const sellDevl = (amount) => {
                         {/* Spacer */}
                     </div>
                 </div>
+
+                {/* GATEWAY TRANSFER */}
+                <div class="row row-30 justify-content-center" style={{ textAlign: 'center' }}>
+                  <div class="col-4 justify-content-center">
+                    <div class="h4" style={{ textAlign: 'center' }}>
+                      TRANSFER DEVIL
+                    </div>
+                    <form class="block block-sm" data-np-checked="1">
+                      <p>Receiver Address</p>
+                      <input type="string" ref={inputRef2} className="form-control"/>
+                      <p>Amount</p>
+                      <input type="number" value={inputValueTransfer} onChange={e => setInputValueTransfer(e.target.value)} className="form-control" />
+                      <div class="p" style={{ textAlign: 'left' }}>
+                        <button 
+                          class="link"
+                          onClick={(event) => {
+                          event.preventDefault()
+                          let amount
+                          amount = devilTokenBalance.toString() 
+                          amount = window.web3.utils.fromWei(amount, 'Ether')
+                          setInputValueTransfer(amount)
+                          }}
+                          >Max
+                          </button>
+                        </div>
+                        <button 
+                          type='submit'
+                          onClick={(event) => {
+                          event.preventDefault()
+                          let amount
+                          amount = inputValueTransfer
+                          // amount = window.web3.utils.toWei(amount, 'Ether')
+                          let receiver
+                          receiver = inputRef2.current.value.toString();
+                          transferDevl(amount, receiver)
+                          }}
+                          className='btn btn-primary btn-lg btn-block'>TRANSFER DEVL
+                        </button>
+                    </form>
+                  </div>         
+                </div>
+
                 <div class="row row-30 justify-content-center">   
                 
                       <div class="modal fade" id="modal-login" tabindex="-1" role="dialog">

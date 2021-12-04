@@ -22,7 +22,8 @@ const Vault = (props) => {
   const [amountStaked, setAmountStaked] = React.useState("0");
   const [lifetimeRewardsGiven, setLifetimeRewardsGiven] = React.useState("0");
   const [globalStakingBalance, setGlobalStakingBalance] = React.useState("0");
-  const [pendingUserRewards, setPendingUserRewards] = React.useState("0");
+  const [pendingUserRewardsBusd, setPendingUserRewardsBusd] = React.useState("0");
+  const [pendingUserRewardsDevl, setPendingUserRewardsDevl] = React.useState("0");
   const [symbol, setSymbol] = React.useState([undefined]);
   const [rangeval, setRangeval] = useState(null);
   const [updateState, setUpdateState] = React.useState(false);
@@ -95,8 +96,11 @@ const Vault = (props) => {
           // let lifetimeRewardsGiven = await devilVault.methods.getLifetimeRewards(account).call();
           // setLifetimeRewardsGiven(lifetimeRewardsGiven.toString());
 
-          let pendingUserRewards = await devilVault.methods.rewardsBusd(account).call();
-          setPendingUserRewards(pendingUserRewards.toString());
+          let pendingUserRewardsBusd = await devilVault.methods.earnedBusd(account).call();
+          setPendingUserRewardsBusd(pendingUserRewardsBusd.toString());
+
+          let pendingUserRewardsDevl = await devilVault.methods.earnedDevl(account).call();
+          setPendingUserRewardsDevl(pendingUserRewardsDevl.toString());
 
           let symbol = await rwd.methods.symbol().call();
           setSymbol(symbol);
@@ -147,8 +151,11 @@ const Vault = (props) => {
       // let lifetimeRewardsGiven = await devilVault.methods.getLifetimeRewards(account).call();
       // setLifetimeRewardsGiven(lifetimeRewardsGiven.toString());
 
-      let pendingUserRewards = await devilVault.methods.rewardsBusd(account).call();
-      setPendingUserRewards(pendingUserRewards.toString());
+      let pendingUserRewardsBusd = await devilVault.methods.earnedBusd(account).call();
+      setPendingUserRewardsBusd(pendingUserRewardsBusd.toString());
+
+      let pendingUserRewardsDevl = await devilVault.methods.earnedDevl(account).call();
+          setPendingUserRewardsDevl(pendingUserRewardsDevl.toString());
 
     }
     init();
@@ -157,7 +164,7 @@ const Vault = (props) => {
   const stakeTokensVault = async (amount) => {
     setUpdateState(true)
     amount = window.web3.utils.toWei(amount, 'Ether')
-    devilToken.methods.transfer(devilVault._address, amount).send({from: account}).on('transactionHash', (hash) => { 
+    devilToken.methods.approve(devilVault._address, amount).send({from: account}).on('transactionHash', (hash) => { 
     devilVault.methods.stake(amount).send({from: account}).on('transactionHash', (hash) => { 
       })
     })
@@ -182,7 +189,6 @@ const Vault = (props) => {
                     <div class="col-4">
                         <div>
                             Status: <b>{updateState ? 'loading' : 'complete'}</b>
-                            <p>DO NOT STAKE VAULT IS PAUSED FOR WITHDRAWL DUE TO EXPLOIT. TEAM IS FIXING IT. </p>
                         </div>
                     </div>
                   </div>
@@ -198,9 +204,9 @@ const Vault = (props) => {
                     </div>
                         <div class="col-4">
                             <div class="h3" style={{ textAlign: 'right' }}>
-                              TOTAL REWARDS   
+                              DEVL REWARDS   
                             </div>
-                                <p style={{ textAlign: 'right' }}>{parseFloat(window.web3.utils.fromWei(lifetimeRewardsGiven, 'Ether')).toFixed(5)} BUSD </p>
+                                <p style={{ textAlign: 'right' }}>{parseFloat(window.web3.utils.fromWei(pendingUserRewardsDevl, 'Ether')).toFixed(5)} DEVL </p>
                         </div>
                 </div>
                 <div class="row row-30 justify-content-center">
@@ -234,7 +240,7 @@ const Vault = (props) => {
                                     onClick={(event) => {
                                     event.preventDefault()
                                     let amount
-                                    amount = inputRef.current.value.toString() 
+                                    amount = inputValue
                                     stakeTokensVault(amount)
                                     }}
                                     className='btn btn-primary btn-lg btn-block'>DEPOSIT
@@ -247,7 +253,7 @@ const Vault = (props) => {
                                     onClick={(event) => {
                                     event.preventDefault()
                                     let amount
-                                    amount = inputRef.current.value.toString()
+                                    amount = inputValue
                                     unstakeTokensVault(amount)
                                     }}
                                     className='btn btn-primary btn-lg btn-block'>WITHDRAW
@@ -265,9 +271,9 @@ const Vault = (props) => {
                     </div>
                         <div class="col-4">
                             <div class="h3" style={{ textAlign: 'right' }}>
-                                USER REWARDS   
+                                BUSD REWARDS   
                             </div>
-                                <p style={{ textAlign: 'right' }}> {parseFloat(window.web3.utils.fromWei(pendingUserRewards, 'Ether')).toFixed(5)} BUSD </p>
+                                <p style={{ textAlign: 'right' }}> {parseFloat(window.web3.utils.fromWei(pendingUserRewardsBusd, 'Ether')).toFixed(5)} BUSD </p>
                         </div>
                 </div>
                 {/* <div class="row row-30 justify-content-left">
