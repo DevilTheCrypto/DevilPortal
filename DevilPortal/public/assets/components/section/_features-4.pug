@@ -1,0 +1,43 @@
+include ../blurb/_blurb
+include ../counter/_counter
+
+// Features
+section.section.section-md.bg-transparent
+	.container
+		.swiper-modern-wrap
+			.swiper-container.swiper-modern(
+				data-swiper!= {
+					loop:          false,
+					autoplay:      false,
+					simulateTouch: false,
+					slidesPerView: 1,
+					spaceBetween:  30,
+					pagination:    {
+						el: ''
+					},
+					scrollbar:     {
+						draggable: true
+					}
+				} )
+				.swiper-wrapper
+					.swiper-slide
+						.row.row-10.align-items-center
+							.col-10.col-sm-8.col-lg-6.col-xxl-7
+								+img( 'home-4-01-734x564.png' )
+							.col-lg-6.col-xxl-5
+								.title-icon.group-20.mt-xxl-2
+									span.icon.icon-circle.icon-lg.icon-style-4.mdi-cursor-default
+									h2 Intuitive Profile Configuration
+								p.bigger Configuring a user profile has never been easier! All you have to do to get the most out of Neon is to register and enter your basic user data to get started.
+								a.btn( href='#' ) Start Using for Free
+					.swiper-slide
+						.row.row-10.align-items-center
+							.col-10.col-sm-8.col-lg-6.col-xxl-7
+								+img( 'home-4-02-606x564.png' )
+							.col-lg-6.col-xxl-5
+								.title-icon.group-20.mt-xxl-2
+									span.icon.icon-circle.icon-lg.icon-style-4.mdi-settings
+									h2 Intuitive Profile Configuration
+								p.bigger Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Do eiusmod tempor incididunt ut labore et dolore.
+								a.btn( href='#' ) Start Using for Free
+				.swiper-scrollbar
