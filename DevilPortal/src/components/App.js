@@ -79,20 +79,20 @@ function App() {
                   <div class="tab-pane fade" id="tabs-1-2">
                     <div class="box px-xl-4 px-xxl-4">
                     <div className="content">
-                      <Vault
+                      {/* <Vault
                           account={account}
                           web3={web3}
-                        />
+                        /> */}
                     </div>
                     </div>
                   </div>
                   <div class="tab-pane fade" id="tabs-1-3">
                     <div class="box px-xl-4 px-xxl-4">
                     <div className="content">
-                      <Governance 
+                      {/* <Governance 
                           account={account}
                           web3={web3}
-                        />
+                        /> */}
                     </div>
                     </div>
                   </div>
