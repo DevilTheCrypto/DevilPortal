@@ -32,6 +32,7 @@ const Gateway = (props) => {
   const [ethBalance, setEthBalance] = React.useState("0");
   
   const [updateState, setUpdateState] = React.useState(false);
+  const [web3Enabled, setWeb3Enabled] = React.useState(false);
   const inputRef = useRef();
   const inputRef2 = useRef();
 
@@ -41,19 +42,17 @@ const Gateway = (props) => {
 
 
   let account = props.account
-  // let web3Enabled = props.web3Enabled;
-  let web3Enabled = false;
 
   // window.web3 = new Web3(window.web3.currentProvider);
   useEffect(() => {
     // window.web3 = new Web3(getNetworkLibrary());
     console.log(window);
     if (account !== undefined){
-      web3Enabled = true;
+      setWeb3Enabled(true);
       // window.web3 = new Web3(window.web3 ? window.web3.currentProvider : provider);
       window.web3 = new Web3(window.web3 ? window.web3.currentProvider : walletconnect.walletConnectProvider);
     }
-    else web3Enabled = false;
+    else setWeb3Enabled(false);
   }, [account]);
 
   useEffect(() => {
@@ -110,7 +109,7 @@ const Gateway = (props) => {
         
     }
     init();
-  }, [account, devilTokenBalance, ethBalance]);
+  }, [web3Enabled, account, devilTokenBalance, ethBalance]);
 
   async function getTokenBalance(contract) {
     console.log("getTokenBalance", contract, account);

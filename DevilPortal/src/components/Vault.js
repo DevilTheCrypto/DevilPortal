@@ -27,20 +27,20 @@ const Vault = (props) => {
   const [symbol, setSymbol] = React.useState([undefined]);
   const [rangeval, setRangeval] = useState(null);
   const [updateState, setUpdateState] = React.useState(false);
+  const [web3Enabled, setWeb3Enabled] = React.useState(false);
   const inputRef = useRef();
 
   let account = props.account;
-  let web3Enabled = false;
   
   useEffect(() => {
     // window.web3 = new Web3(getNetworkLibrary());
     console.log(window);
     if (account !== undefined){
-      web3Enabled = true;
+      setWeb3Enabled(true);
       // window.web3 = new Web3(window.web3 ? window.web3.currentProvider : provider);
       window.web3 = new Web3(window.web3 ? window.web3.currentProvider : walletconnect.walletConnectProvider);
     }
-    else web3Enabled = false;
+    else setWeb3Enabled(false);
   }, [account]);
 
   useEffect(() => {
@@ -48,6 +48,7 @@ const Vault = (props) => {
     const init = async () => {
 
       const web3 = window.web3;
+      console.log("before creating contract objects", web3Enabled);
       if (web3Enabled) {
         console.log("creating contract objects");
         try{
@@ -136,7 +137,7 @@ const Vault = (props) => {
         
     }
     init();
-  }, [account, amountStaked, setAmountStaked]);
+  }, [web3Enabled, account, amountStaked, setAmountStaked]);
     
   async function update() {
     
