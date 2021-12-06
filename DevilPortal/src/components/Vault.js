@@ -31,14 +31,14 @@ const Vault = (props) => {
   const inputRef = useRef();
 
   //new variables to merge before deploy
-
-
   const [pendingUserRewardsBusd, setPendingUserRewardsBusd] = React.useState("0");
   const [pendingUserRewardsDevl, setPendingUserRewardsDevl] = React.useState("0");
   const [inputValue, setInputValue] = React.useState(0);
 
-  let account = props.account;
+  let account = props.account
+
   
+  // window.web3 = new Web3(window.web3.currentProvider);
   useEffect(() => {
     if (account !== undefined){
       setWeb3Enabled(true);
@@ -51,13 +51,13 @@ const Vault = (props) => {
     
     const init = async () => {
 
-      const web3 = window.web3;
-      if (web3Enabled) {
-        try{
+        const web3 = window.web3;
+        
+        if (account !== undefined) {
           const networkId = await web3.eth.net.getId();
           setNetworkId(networkId);
-          
-          //LOAD Chad Vault
+
+          //LOAD devil vault
           const devilVaultAddress = "0xe12f2f9Bf3939BCe8F41CAd1247924a0B2dda942";
           setDevilVaultAddress(devilVaultAddress);
           const devilVault = new web3.eth.Contract(
@@ -65,59 +65,36 @@ const Vault = (props) => {
             devilVaultAddress
           );
           setDevilVault(devilVault);
-        } catch (error) {
-          alert(
-            'Failed to load devil vault.',
-                );
-        }
+          console.log(devilVault);
 
-        //LOAD devilToken
-        const devilTokenAddress = "0x65aEd7F90a0cF876D496d8093D3F89748ba66b57";
-        setDevilTokenAddress(devilTokenAddress);
-        const devilToken = new web3.eth.Contract(
-          DevilTokenAbi,
-          devilTokenAddress
-        );
-        setDevilToken(devilToken);
-        console.log(devilToken);
-
-        //LOAD RWD
-        const rwdAddress = "0x19027aEf0fDB5C30b3dC4E863fccFC6F05aCf184";
-        setRwdAddress(rwdAddress);
-        const rwd = new web3.eth.Contract(
-          RwdAbi,
-          rwdAddress
-        );
-        setRwd(rwd);
-
+          //Load Devil Token
+          const devilTokenAddress = "0x65aEd7F90a0cF876D496d8093D3F89748ba66b57";
+          setDevilTokenAddress(devilTokenAddress);
+          const devilToken = new web3.eth.Contract(
+            DevilTokenAbi,
+            devilTokenAddress
+          );
+          setDevilToken(devilToken);
+          console.log(devilToken);
         
-        if(account !== undefined){
-
-        let account = props.account;
+            //Load our staking state and other account data
+    
+            let devilTokenBalance = await devilToken.methods.balanceOf(account).call();
+            setDevilTokenBalance(devilTokenBalance.toString());
+            
+            let amountStaked = await devilVault.methods.getUserStaked(account).call();
+            setAmountStaked(amountStaked.toString());
+    
+            let globalStakingBalance = await devilVault.methods.getTotalStaked().call();
+            setGlobalStakingBalance(globalStakingBalance.toString());
+    
+            let pendingUserRewardsBusd = await devilVault.methods.earnedBusd(account).call();
+            setPendingUserRewardsBusd(pendingUserRewardsBusd.toString());
+    
+            let pendingUserRewardsDevl = await devilVault.methods.earnedDevl(account).call();
+            setPendingUserRewardsDevl(pendingUserRewardsDevl.toString());
+            
         
-        //Load our staking state and other account data
-
-        let devilTokenBalance = await devilToken.methods.balanceOf(account).call();
-        setDevilTokenBalance(devilTokenBalance.toString());
-        
-        let amountStaked = await devilVault.methods.getUserStaked(account).call();
-        setAmountStaked(amountStaked.toString());
-
-        let globalStakingBalance = await devilVault.methods.getTotalStaked().call();
-        setGlobalStakingBalance(globalStakingBalance.toString());
-
-        // let lifetimeRewardsGiven = await devilVault.methods.getLifetimeRewards(account).call();
-        // setLifetimeRewardsGiven(lifetimeRewardsGiven.toString());
-
-        let pendingUserRewardsBusd = await devilVault.methods.earnedBusd(account).call();
-        setPendingUserRewardsBusd(pendingUserRewardsBusd.toString());
-
-        let pendingUserRewardsDevl = await devilVault.methods.earnedDevl(account).call();
-        setPendingUserRewardsDevl(pendingUserRewardsDevl.toString());
-
-        let symbol = await rwd.methods.symbol().call();
-        setSymbol(symbol);
-        }
           //event subscriptions that call update function to sync state variables w/ block chain
 
           devilVault.events.Staked({fromBlock: 0})
@@ -146,33 +123,85 @@ const Vault = (props) => {
         
     }
     init();
-  }, [web3Enabled, amountStaked, setAmountStaked]);
-    
+  }, [web3Enabled, amountStaked, setAmountStaked, account]);
+
   async function update() {
     
     const init = async () => {
 
+      const web3 = window.web3;
+      
+      //LOAD devil vault
+      const devilVaultAddress = "0xe12f2f9Bf3939BCe8F41CAd1247924a0B2dda942";
+      setDevilVaultAddress(devilVaultAddress);
+      const devilVault = new web3.eth.Contract(
+        DevilVaultAbi,
+        devilVaultAddress
+      );
+      setDevilVault(devilVault);
+      console.log(devilVault);
+
+      //Load Devil Token
+      const devilTokenAddress = "0x65aEd7F90a0cF876D496d8093D3F89748ba66b57";
+      setDevilTokenAddress(devilTokenAddress);
+      const devilToken = new web3.eth.Contract(
+        DevilTokenAbi,
+        devilTokenAddress
+      );
+      setDevilToken(devilToken);
+      console.log(devilToken);
+    
       let devilTokenBalance = await devilToken.methods.balanceOf(account).call();
       setDevilTokenBalance(devilTokenBalance.toString());
-          
-      const amountStaked = await devilVault.methods.getUserStaked(account).call();
+            
+      let amountStaked = await devilVault.methods.getUserStaked(account).call();
       setAmountStaked(amountStaked.toString());
-
+    
       let globalStakingBalance = await devilVault.methods.getTotalStaked().call();
       setGlobalStakingBalance(globalStakingBalance.toString());
-
-      // let lifetimeRewardsGiven = await devilVault.methods.getLifetimeRewards(account).call();
-      // setLifetimeRewardsGiven(lifetimeRewardsGiven.toString());
-
+    
       let pendingUserRewardsBusd = await devilVault.methods.earnedBusd(account).call();
       setPendingUserRewardsBusd(pendingUserRewardsBusd.toString());
-
+    
       let pendingUserRewardsDevl = await devilVault.methods.earnedDevl(account).call();
       setPendingUserRewardsDevl(pendingUserRewardsDevl.toString());
 
     }
     init();
   }
+
+  // useEffect(() => {
+    
+  //   let account = props.account;
+
+  //   if (account !== undefined){
+  //     setWeb3Enabled(true);
+  //     window.web3 = new Web3(window.web3 ? window.web3.currentProvider : walletconnect.walletConnectProvider);
+  //   }
+  //   else setWeb3Enabled(false);
+
+  //   const init = async () => {
+
+  //     const web3 = window.web3;
+  //     if (web3Enabled) {
+  //       try{
+  //         const networkId = await web3.eth.net.getId();
+  //         setNetworkId(networkId);
+          
+  //         //LOAD DEVL Vault
+  //         const devilVaultAddress = "0xe12f2f9Bf3939BCe8F41CAd1247924a0B2dda942";
+  //         setDevilVaultAddress(devilVaultAddress);
+  //         const devilVault = new web3.eth.Contract(
+  //           DevilVaultAbi,
+  //           devilVaultAddress
+  //         );
+  //         setDevilVault(devilVault);
+  //       } catch (error) {
+  //         alert(
+  //           'Failed to load devil vault.',
+  //               );
+  //       }
+
 
   const stakeTokensVault = async (amount) => {
     setUpdateState(true)
@@ -211,8 +240,7 @@ return (
               <div class="h3">
                   TOTAL STAKED   
               </div>
-                  {/* <p> {parseFloat(window.web3.utils.fromWei(globalStakingBalance, 'Ether')).toFixed(5)} DEVL </p> */}
-                  {globalStakingBalance}
+                  <p> {web3Enabled ? globalStakingBalance/1e18 : 0 } DEVL </p>
           </div>
           <div class="col-4 justify-content-center">
               <img class="mt-xxl-4" src="assets/media/DEVIL_logo_red_centered.png" alt="" width="674" height="572"/>
@@ -221,21 +249,20 @@ return (
                   <div class="h3" style={{ textAlign: 'right' }}>
                     DEVL REWARDS   
                   </div>
-                      {/* <p style={{ textAlign: 'right' }}>{parseFloat(window.web3.utils.fromWei(pendingUserRewardsDevl, 'Ether')).toFixed(5)} DEVL </p> */}
+                      <p style={{ textAlign: 'right' }}>{web3Enabled ? pendingUserRewardsDevl/1e18 : 0 } DEVL</p>
               </div>
       </div>
       <div class="row row-30 justify-content-center">
           <div class="col-4">
               <div class="h3">
-                  USER 
-                  STAKED   
+                  USER STAKED   
               </div>
-                  {/* <p> {parseFloat(window.web3.utils.fromWei(amountStaked, 'Ether')).toFixed(5)} DEVL </p> */}
+                  <p> {web3Enabled ? amountStaked/1e18 : 0 } DEVL </p>
           </div>
           <div class="col-4 justify-content-center">
               <form class="block block-sm" data-np-checked="1">
                       {/* <p>Balance: {parseFloat(window.web3.utils.fromWei(devilTokenBalance, 'Ether')).toFixed(5)}</p>  */}
-                      <p>{devilTokenBalance}</p>
+                      <p>{web3Enabled ? devilTokenBalance/1e18 : 0 } DEVL </p>
                   {/* <input type="number" ref={inputRef} className="form-control"/> */}
                   <input type="number" value={inputValue} onChange={e => setInputValue(e.target.value)} className="form-control"/> 
                       
@@ -262,8 +289,6 @@ return (
                           className='btn btn-primary btn-lg btn-block'>DEPOSIT
                       </button>
                       
-                      
-                  
                       <button 
                           type='submit'
                           onClick={(event) => {
@@ -289,7 +314,7 @@ return (
                   <div class="h3" style={{ textAlign: 'right' }}>
                       BUSD REWARDS   
                   </div>
-                      {/* <p style={{ textAlign: 'right' }}> {parseFloat(window.web3.utils.fromWei(pendingUserRewardsBusd, 'Ether')).toFixed(5)} BUSD </p> */}
+                      <p style={{ textAlign: 'right' }}> {web3Enabled ? pendingUserRewardsBusd/1e18 : 0 } BUSD </p>
               </div>
       </div>
       {/* <div class="row row-30 justify-content-left">

@@ -1,4 +1,5 @@
-import React, { Component, useEffect, useState, setState } from "react";
+import React, { Component, useEffect, useState, setState, useRef } from "react";
+import Web3 from "web3";
 import Navbar from "./Navbar";
 import "./App.css";
 import Vault from "./Vault.js";
@@ -7,6 +8,9 @@ import { useWeb3React } from "@web3-react/core";
 import useAuth from "../hooks/useAuth";
 import { useWalletModal } from "@pancakeswap-libs/uikit";
 import Governance from "./Governance";
+import { provider, walletconnect } from '../connectors/index';
+import DevilTokenAbi from "../remix_abis/DevilToken.json";
+import DevilGatewayAbi from "../remix_abis/Gateway.json";
 
 function App() {
 
@@ -18,7 +22,81 @@ function App() {
     account || undefined
   );
   console.log(account);
+
+  //Blockchain Data State Variables - General
+  const [web3Enabled, setWeb3Enabled] = React.useState(false);
+  const [networkId, setNetworkId] = React.useState(undefined);
+  const [devilToken, setDevilToken] = React.useState([undefined]);
+  const [devilTokenAddress, setDevilTokenAddress] = React.useState("");
+  const [devilTokenBalance, setDevilTokenBalance] = React.useState("0");
+  const [rwd, setRwd] = React.useState(undefined);
+  const [rwdAddress, setRwdAddress] = React.useState("");
+  const [rewardTokenAddress, setRewardTokenAddress] = React.useState("");
+  const [rwdTokenBalance, setRwdTokenBalance] = React.useState("0");
+  const [ethBalance, setEthBalance] = React.useState("0");
+  const [updateState, setUpdateState] = React.useState(false);
+
+  //Blockchain Datat State Variables - Devil's Gateway
+  const [devilGateway, setDevilGateway] = React.useState([undefined]);
+  const [devilGatewayAddress, setDevilGatewayAddress] = React.useState("");
   
+  const [devilVault, setDevilVault] = React.useState([undefined]);
+  const [devilVaultAddress, setDevilVaultAddress] = React.useState("");
+  const [stakingBalance, setStakingBalance] = React.useState("0");
+  const [amountStaked, setAmountStaked] = React.useState("0");
+  const [lifetimeRewardsGiven, setLifetimeRewardsGiven] = React.useState("0");
+  const [globalStakingBalance, setGlobalStakingBalance] = React.useState("0");
+  const [pendingUserRewards, setPendingUserRewards] = React.useState("0");
+  
+  const inputRef = useRef();
+  const inputRef2 = useRef();
+  
+
+  //load blockchain data
+
+  useEffect(() => {
+    if (account !== undefined){
+      setWeb3Enabled(true);
+      window.web3 = new Web3(window.web3 ? window.web3.currentProvider : walletconnect.walletConnectProvider);
+    }
+    else setWeb3Enabled(false);
+  }, [account]);
+
+  useEffect(() => {
+    
+    const init = async () => {
+
+        const web3 = window.web3;
+        if (web3Enabled) {
+          const networkId = await web3.eth.net.getId();
+          setNetworkId(networkId);
+
+          //Load Devil Token
+          const devilTokenAddress = "0x65aEd7F90a0cF876D496d8093D3F89748ba66b57";
+          setDevilTokenAddress(devilTokenAddress);
+          const devilToken = new web3.eth.Contract(
+            DevilTokenAbi,
+            devilTokenAddress
+          );
+          setDevilToken(devilToken);
+          console.log(devilToken);
+
+          //Load our state and other account data
+          await getTokenBalance(devilToken);
+
+        }
+    }
+    init();
+    }, [web3Enabled, devilTokenBalance, ethBalance]);
+
+    async function getTokenBalance(contract) {
+      try {
+        const devilTokenBalance = await contract.methods.balanceOf(account).call();
+        setDevilTokenBalance(devilTokenBalance.toString());
+      } catch (error) {
+        console.log("catch", error);
+      }
+    }
 
   return (
     <>
@@ -34,6 +112,7 @@ function App() {
               <div class="container">
                 <div class="tab tab-line">
                   <ul class="nav nav-line biggest">
+                    <p>{devilTokenBalance}</p>
                     <li class="nav-item" role="presentation">
                       <a class="nav-link active show" href="#tabs-1-1" data-toggle="tab">
                         Gateway
@@ -67,6 +146,8 @@ function App() {
                         <Gateway
                           account={account}
                           web3={web3}
+                          devilGateway ={devilGateway}
+                          devilToken = {devilToken}
                         />  
                         {/* <Vault
                           account={account}
@@ -82,6 +163,7 @@ function App() {
                       <Vault
                           account={account}
                           web3={web3}
+                          devilToken = {devilToken}
                         />
                     </div>
                     </div>

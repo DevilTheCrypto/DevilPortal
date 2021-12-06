@@ -4,6 +4,7 @@ import "./App.css";
 import DevilTokenAbi from "../remix_abis/DevilToken.json";
 import DevilGatewayAbi from "../remix_abis/Gateway.json";
 import OnramperWidget from "@onramper/widget";
+import DevilVaultAbi from "../remix_abis/DevilVault.json"
 import RwdAbi from "../remix_abis/RWD.json";
 import OnramperWidgetContainer from "./Onboarder.js"
 import RangeSliderDEVL from "./RangeSlider";
@@ -12,7 +13,7 @@ import { provider, walletconnect } from '../connectors/index';
 const Gateway = (props) => {
 
   const [networkId, setNetworkId] = React.useState(undefined);
-  const [devilToken, setDevilToken] = React.useState([undefined]);
+  // const [devilToken, setDevilToken] = React.useState([undefined]);
   const [devilTokenAddress, setDevilTokenAddress] = React.useState("");
   const [rwd, setRwd] = React.useState(undefined);
   const [rwdAddress, setRwdAddress] = React.useState("");
@@ -39,9 +40,8 @@ const Gateway = (props) => {
   // const APIKEY = process.env.REACT_APP_API_KEY
   const APIKEY = 'pk_prod_H2r9uOFoPvXZRouc0brXKBhL8jEYJKtivAgsAbLxUL40';
 
-
-
   let account = props.account
+  let devilToken = props.devilToken;
 
   // window.web3 = new Web3(window.web3.currentProvider);
   useEffect(() => {
@@ -61,16 +61,6 @@ const Gateway = (props) => {
           const networkId = await web3.eth.net.getId();
           setNetworkId(networkId);
 
-          //LOAD devilToken
-          const devilTokenAddress = "0x65aEd7F90a0cF876D496d8093D3F89748ba66b57";
-          setDevilTokenAddress(devilTokenAddress);
-          const devilToken = new web3.eth.Contract(
-            DevilTokenAbi,
-            devilTokenAddress
-          );
-          setDevilToken(devilToken);
-          console.log(devilToken);
-
           //LOAD devil gateway
           const devilGatewayAddress = "0x1C781CE11522dCDCc1C082606Eb3c67231624FEd";
           setDevilGatewayAddress(devilGatewayAddress);
@@ -80,6 +70,7 @@ const Gateway = (props) => {
           );
           setDevilGateway(devilGateway);
           console.log(devilGateway);
+
 
           //Load our staking state and other account data
           await getTokenBalance(devilToken);
@@ -151,7 +142,7 @@ const sellDevl = (amount) => {
                     <div class="col-3">
                         <div>
                             Status: <b>{updateState ? 'loading' : 'complete'}</b>
-                            
+                        
                         </div>
                     </div>
                     <div class="col-3">
