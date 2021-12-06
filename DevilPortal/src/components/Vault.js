@@ -30,6 +30,13 @@ const Vault = (props) => {
   const [web3Enabled, setWeb3Enabled] = React.useState(false);
   const inputRef = useRef();
 
+  //new variables to merge before deploy
+
+
+  const [pendingUserRewardsBusd, setPendingUserRewardsBusd] = React.useState("0");
+  const [pendingUserRewardsDevl, setPendingUserRewardsDevl] = React.useState("0");
+  const [inputValue, setInputValue] = React.useState(0);
+
   let account = props.account;
   
   useEffect(() => {
@@ -49,6 +56,7 @@ const Vault = (props) => {
         try{
           const networkId = await web3.eth.net.getId();
           setNetworkId(networkId);
+          
           //LOAD Chad Vault
           const devilVaultAddress = "0xe12f2f9Bf3939BCe8F41CAd1247924a0B2dda942";
           setDevilVaultAddress(devilVaultAddress);
@@ -82,26 +90,34 @@ const Vault = (props) => {
         );
         setRwd(rwd);
 
+        
+        if(account !== undefined){
+
+        let account = props.account;
+        
         //Load our staking state and other account data
 
-          let devilTokenBalance = await devilToken.methods.balanceOf(account).call();
-          setDevilTokenBalance(devilTokenBalance.toString());
-          
-          const amountStaked = await devilVault.methods.amountStaked(account).call();
-          setAmountStaked(amountStaked.toString());
+        let devilTokenBalance = await devilToken.methods.balanceOf(account).call();
+        setDevilTokenBalance(devilTokenBalance.toString());
+        
+        let amountStaked = await devilVault.methods.getUserStaked(account).call();
+        setAmountStaked(amountStaked.toString());
 
-          let globalStakingBalance = await devilVault.methods.globalStakingTokenBalance().call();
-          setGlobalStakingBalance(globalStakingBalance.toString());
+        let globalStakingBalance = await devilVault.methods.getTotalStaked().call();
+        setGlobalStakingBalance(globalStakingBalance.toString());
 
-          let lifetimeRewardsGiven = await devilVault.methods.lifetimeRewardsGiven().call();
-          setLifetimeRewardsGiven(lifetimeRewardsGiven.toString());
+        // let lifetimeRewardsGiven = await devilVault.methods.getLifetimeRewards(account).call();
+        // setLifetimeRewardsGiven(lifetimeRewardsGiven.toString());
 
-          let pendingUserRewards = await devilVault.methods.rewardsPending(account).call();
-          setPendingUserRewards(pendingUserRewards.toString());
+        let pendingUserRewardsBusd = await devilVault.methods.earnedBusd(account).call();
+        setPendingUserRewardsBusd(pendingUserRewardsBusd.toString());
 
-          let symbol = await rwd.methods.symbol().call();
-          setSymbol(symbol);
+        let pendingUserRewardsDevl = await devilVault.methods.earnedDevl(account).call();
+        setPendingUserRewardsDevl(pendingUserRewardsDevl.toString());
 
+        let symbol = await rwd.methods.symbol().call();
+        setSymbol(symbol);
+        }
           //event subscriptions that call update function to sync state variables w/ block chain
 
           devilVault.events.Staked({fromBlock: 0})
@@ -112,17 +128,21 @@ const Vault = (props) => {
             .on('data', event => update()
             );
 
-          devilVault.events.RewardClaimed({fromBlock: 0})
+          devilVault.events.RewardPaidBusd({fromBlock: 0})
+            .on('data', event => update()
+            );
+
+            devilVault.events.RewardPaidDevl({fromBlock: 0})
             .on('data', event => update()
             );
           
-          devilVault.events.RewardDistributed({fromBlock: 0})
+          devilVault.events.RewardAddedBusd({fromBlock: 0})
             .on('data', event => update()
             );
 
           const updateState = false
           setUpdateState(updateState)
-        } 
+        }
         
     }
     init();
@@ -134,18 +154,21 @@ const Vault = (props) => {
 
       let devilTokenBalance = await devilToken.methods.balanceOf(account).call();
       setDevilTokenBalance(devilTokenBalance.toString());
-      
-      let amountStaked = await devilVault.methods.amountStaked(account).call();
+          
+      const amountStaked = await devilVault.methods.getUserStaked(account).call();
       setAmountStaked(amountStaked.toString());
 
-      let globalStakingBalance = await devilVault.methods.globalStakingTokenBalance().call();
+      let globalStakingBalance = await devilVault.methods.getTotalStaked().call();
       setGlobalStakingBalance(globalStakingBalance.toString());
 
-      let lifetimeRewardsGiven = await devilVault.methods.lifetimeRewardsGiven().call();
-      setLifetimeRewardsGiven(lifetimeRewardsGiven.toString());
+      // let lifetimeRewardsGiven = await devilVault.methods.getLifetimeRewards(account).call();
+      // setLifetimeRewardsGiven(lifetimeRewardsGiven.toString());
 
-      let pendingUserRewards = await devilVault.methods.rewardsPending(account).call();
-      setPendingUserRewards(pendingUserRewards.toString());
+      let pendingUserRewardsBusd = await devilVault.methods.earnedBusd(account).call();
+      setPendingUserRewardsBusd(pendingUserRewardsBusd.toString());
+
+      let pendingUserRewardsDevl = await devilVault.methods.earnedDevl(account).call();
+      setPendingUserRewardsDevl(pendingUserRewardsDevl.toString());
 
     }
     init();
@@ -153,7 +176,8 @@ const Vault = (props) => {
 
   const stakeTokensVault = async (amount) => {
     setUpdateState(true)
-    devilToken.methods.transfer(devilVault._address, amount).send({from: account}).on('transactionHash', (hash) => { 
+    amount = window.web3.utils.toWei(amount, 'Ether')
+    devilToken.methods.approve(devilVault._address, amount).send({from: account}).on('transactionHash', (hash) => { 
     devilVault.methods.stake(amount).send({from: account}).on('transactionHash', (hash) => { 
       })
     })
@@ -161,6 +185,7 @@ const Vault = (props) => {
 
   const unstakeTokensVault = (amount) => {
   setUpdateState(true)
+  amount = window.web3.utils.toWei(amount, 'Ether')
   devilVault.methods.withdraw(amount).send({from: account}).on('transactionHash', (hash) => {
   })
 }
@@ -171,127 +196,141 @@ const Vault = (props) => {
   })
 }
     
-        return (
-            <div> 
-                <div class="row row-30 justify-content-left">
-                    <div class="col-4">
-                        <div>
-                            Status: <b>{updateState ? 'loading' : 'complete'}</b>
-                            <p>DO NOT STAKE VAULT IS PAUSED FOR WITHDRAWL DUE TO EXPLOIT. TEAM IS FIXING IT. </p>
-                        </div>
-                    </div>
+return (
+  <div> 
+      <div class="row row-30 justify-content-left">
+          <div class="col-4">
+              <div>
+                  Status: <b>{updateState ? 'loading' : 'complete'}</b>
+                  <p>Vault v2 - currently on testnet ONLY</p>
+              </div>
+          </div>
+        </div>
+      <div class="row row-30 justify-content-center">
+          <div class="col-4">
+              <div class="h3">
+                  TOTAL STAKED   
+              </div>
+                  {/* <p> {parseFloat(window.web3.utils.fromWei(globalStakingBalance, 'Ether')).toFixed(5)} DEVL </p> */}
+                  {globalStakingBalance}
+          </div>
+          <div class="col-4 justify-content-center">
+              <img class="mt-xxl-4" src="assets/media/DEVIL_logo_red_centered.png" alt="" width="674" height="572"/>
+          </div>
+              <div class="col-4">
+                  <div class="h3" style={{ textAlign: 'right' }}>
+                    DEVL REWARDS   
                   </div>
-                <div class="row row-30 justify-content-center">
-                    <div class="col-4">
-                        <div class="h3">
-                            TOTAL STAKED   
-                        </div>
-                            <p> {web3Enabled ? parseFloat(window.web3.utils.fromWei(globalStakingBalance, 'Ether')).toFixed(5) : 0} DEVL </p>
-                    </div>
-                    <div class="col-4 justify-content-center">
-                        <img class="mt-xxl-4" src="assets/media/DEVIL_logo_red_centered.png" alt="" width="674" height="572"/>
-                    </div>
-                        <div class="col-4">
-                            <div class="h3" style={{ textAlign: 'right' }}>
-                              TOTAL REWARDS   
-                            </div>
-                                <p style={{ textAlign: 'right' }}>{web3Enabled ? parseFloat(window.web3.utils.fromWei(lifetimeRewardsGiven, 'Ether')).toFixed(5) : 0} BUSD </p>
-                        </div>
-                </div>
-                <div class="row row-30 justify-content-center">
-                    <div class="col-4">
-                        <div class="h3">
-                            USER 
-                            STAKED   
-                        </div>
-                            <p> {web3Enabled ? parseFloat(window.web3.utils.fromWei(amountStaked, 'Ether')).toFixed(5) : 0} DEVL </p>
-                    </div>
-                    <div class="col-4 justify-content-center">
-                        <form class="block block-sm" data-np-checked="1">
-                            <p>Balance: {web3Enabled ? parseFloat(window.web3.utils.fromWei(devilTokenBalance, 'Ether')).toFixed(5) : 0}</p>
-                            <input type="number" ref={inputRef} className="form-control" />
-                                
-                                <button 
-                                    type='submit'
-                                    onClick={(event) => {
-                                    event.preventDefault()
-                                    let amount
-                                    amount = inputRef.current.value.toString() 
-                                    amount = window.web3.utils.toWei(amount, 'Ether')
-                                    // stakeTokensVault(amount)
-                                    }}
-                                    className='btn btn-primary btn-lg btn-block'>DEPOSIT
-                                </button>
-                                
-                            
-                                <button 
-                                    type='submit'
-                                    onClick={(event) => {
-                                    event.preventDefault()
-                                    let amount
-                                    amount = inputRef.current.value.toString()
-                                    amount = window.web3.utils.toWei(amount, 'Ether')
-                                    unstakeTokensVault(amount)
-                                    }}
-                                    className='btn btn-primary btn-lg btn-block'>WITHDRAW
-                                </button> 
+                      {/* <p style={{ textAlign: 'right' }}>{parseFloat(window.web3.utils.fromWei(pendingUserRewardsDevl, 'Ether')).toFixed(5)} DEVL </p> */}
+              </div>
+      </div>
+      <div class="row row-30 justify-content-center">
+          <div class="col-4">
+              <div class="h3">
+                  USER 
+                  STAKED   
+              </div>
+                  {/* <p> {parseFloat(window.web3.utils.fromWei(amountStaked, 'Ether')).toFixed(5)} DEVL </p> */}
+          </div>
+          <div class="col-4 justify-content-center">
+              <form class="block block-sm" data-np-checked="1">
+                      {/* <p>Balance: {parseFloat(window.web3.utils.fromWei(devilTokenBalance, 'Ether')).toFixed(5)}</p>  */}
+                      <p>{devilTokenBalance}</p>
+                  {/* <input type="number" ref={inputRef} className="form-control"/> */}
+                  <input type="number" value={inputValue} onChange={e => setInputValue(e.target.value)} className="form-control"/> 
+                      
+                      <button 
+                        class="link"
+                        onClick={(event) => {
+                        event.preventDefault()
+                        let amount
+                        amount = devilTokenBalance.toString() 
+                        amount = window.web3.utils.fromWei(amount, 'Ether')
+                        setInputValue(amount)
+                        }}
+                        >Max
+                      </button>
+                      
+                      <button 
+                          type='submit'
+                          onClick={(event) => {
+                          event.preventDefault()
+                          let amount
+                          amount = inputValue
+                          stakeTokensVault(amount)
+                          }}
+                          className='btn btn-primary btn-lg btn-block'>DEPOSIT
+                      </button>
+                      
+                      
+                  
+                      <button 
+                          type='submit'
+                          onClick={(event) => {
+                          event.preventDefault()
+                          let amount
+                          amount = inputValue
+                          unstakeTokensVault(amount)
+                          }}
+                          className='btn btn-primary btn-lg btn-block'>WITHDRAW
+                      </button> 
 
-                                <button 
-                                    type='submit'
-                                    onClick={(event) => {
-                                    event.preventDefault()
-                                    claimRewards()
-                                    }}
-                                    className='btn btn-primary btn-lg btn-block'>CLAIM
-                                </button>                              
-                        </form>
-                    </div>
-                        <div class="col-4">
-                            <div class="h3" style={{ textAlign: 'right' }}>
-                                USER REWARDS   
+                      <button 
+                          type='submit'
+                          onClick={(event) => {
+                          event.preventDefault()
+                          claimRewards()
+                          }}
+                          className='btn btn-primary btn-lg btn-block'>CLAIM
+                      </button>                              
+              </form>
+          </div>
+              <div class="col-4">
+                  <div class="h3" style={{ textAlign: 'right' }}>
+                      BUSD REWARDS   
+                  </div>
+                      {/* <p style={{ textAlign: 'right' }}> {parseFloat(window.web3.utils.fromWei(pendingUserRewardsBusd, 'Ether')).toFixed(5)} BUSD </p> */}
+              </div>
+      </div>
+      {/* <div class="row row-30 justify-content-left">
+      <p>Address: {props.account && props.account}</p>
+      </div> */}
+   
+                                                        
+            {/* <!-- Modal: JUST A CODE SAVE FOR TEMPLATE NOT ACTIVE--> */}
+            {/* <div class="modal fade" id="modal-login" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body text-center">
+                            <h3>Log In</h3>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing</p>
+                            <form class="rd-mailform">
+                            <div class="form-group">
+                                <input class="form-control" type="text" name="name" placeholder="Your name *" data-constraints="@Required" />
                             </div>
-                                <p style={{ textAlign: 'right' }}> {web3Enabled ? parseFloat(window.web3.utils.fromWei(pendingUserRewards, 'Ether')).toFixed(5) : 0} BUSD </p>
+                            <div class="form-group">
+                                <input class="form-control" type="password" name="password" placeholder="Password *" data-constraints="@Required" />
+                            </div>
+                            <div class="offset-xxs group-40 d-flex flex-wrap flex-xs-nowrap align-items-center">
+                                <button class="btn btn-block" type="submit">Log in</button>
+                            </div>
+                            </form>
                         </div>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    </div>
                 </div>
-                {/* <div class="row row-30 justify-content-left">
-                <p>Address: {props.account && props.account}</p>
-                </div> */}
-             
-                                                                  
-                      {/* <!-- Modal: JUST A CODE SAVE FOR TEMPLATE NOT ACTIVE--> */}
-                      {/* <div class="modal fade" id="modal-login" tabindex="-1" role="dialog">
-                          <div class="modal-dialog" role="document">
-                              <div class="modal-content">
-                                  <div class="modal-body text-center">
-                                      <h3>Log In</h3>
-                                      <p>Lorem ipsum dolor sit amet, consectetur adipiscing</p>
-                                      <form class="rd-mailform">
-                                      <div class="form-group">
-                                          <input class="form-control" type="text" name="name" placeholder="Your name *" data-constraints="@Required" />
-                                      </div>
-                                      <div class="form-group">
-                                          <input class="form-control" type="password" name="password" placeholder="Password *" data-constraints="@Required" />
-                                      </div>
-                                      <div class="offset-xxs group-40 d-flex flex-wrap flex-xs-nowrap align-items-center">
-                                          <button class="btn btn-block" type="submit">Log in</button>
-                                      </div>
-                                      </form>
-                                  </div>
-                              <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-                              </div>
-                          </div>
-                      </div> */}
-                       {/* <!-- Preloader--> */}
-                      <div class="preloader">
-                          <div class="preloader-inner">
-                              <div class="preloader-dot"></div>
-                              <div class="preloader-dot"></div>
-                              <div class="preloader-dot"></div>
-                              <div class="preloader-dot"></div>
-                          </div>
-                      </div>
-            </div>    
-          );
-        }
-    
+            </div> */}
+             {/* <!-- Preloader--> */}
+            <div class="preloader">
+                <div class="preloader-inner">
+                    <div class="preloader-dot"></div>
+                    <div class="preloader-dot"></div>
+                    <div class="preloader-dot"></div>
+                    <div class="preloader-dot"></div>
+                </div>
+            </div>
+  </div>    
+);
+}
+
 export default (Vault);
