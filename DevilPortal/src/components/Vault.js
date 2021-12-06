@@ -52,7 +52,7 @@ const Vault = (props) => {
         try{
 
         //LOAD Chad Vault
-        const devilVaultAddress = "0x42B852a2F28B305B947A6C9a6bA44d6f7C759ff0";
+        const devilVaultAddress = "0xe12f2f9Bf3939BCe8F41CAd1247924a0B2dda942";
         setDevilVaultAddress(devilVaultAddress);
         const devilVault = new web3.eth.Contract(
           DevilVaultAbi,
@@ -67,7 +67,7 @@ const Vault = (props) => {
         }
 
         //LOAD devilToken
-        const devilTokenAddress = "0xD280e0Fea29BcAe6ED9DD9fb4B9e5Fa90F5C249D";
+        const devilTokenAddress = "0x65aEd7F90a0cF876D496d8093D3F89748ba66b57";
         setDevilTokenAddress(devilTokenAddress);
         const devilToken = new web3.eth.Contract(
           DevilTokenAbi,
@@ -77,7 +77,7 @@ const Vault = (props) => {
         console.log(devilToken);
 
         //LOAD RWD
-        const rwdAddress = "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56";
+        const rwdAddress = "0x19027aEf0fDB5C30b3dC4E863fccFC6F05aCf184";
         setRwdAddress(rwdAddress);
         const rwd = new web3.eth.Contract(
           RwdAbi,

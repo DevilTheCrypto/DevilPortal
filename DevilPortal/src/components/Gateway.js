@@ -60,7 +60,7 @@ const Gateway = (props) => {
           setNetworkId(networkId);
 
           //LOAD devilToken
-          const devilTokenAddress = "0xD280e0Fea29BcAe6ED9DD9fb4B9e5Fa90F5C249D";
+          const devilTokenAddress = "0x65aEd7F90a0cF876D496d8093D3F89748ba66b57";
           setDevilTokenAddress(devilTokenAddress);
           const devilToken = new web3.eth.Contract(
             DevilTokenAbi,
