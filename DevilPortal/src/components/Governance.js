@@ -25,6 +25,7 @@ const Governance = (props) => {
     const [devilVaultAddress, setDevilVaultAddress] = React.useState("");
     const [devilTokenBalance, setDevilTokenBalance] = React.useState("0");
     const [updateState, setUpdateState] = React.useState(false);
+    const [web3Enabled, setWeb3Enabled] = React.useState(false);
 
     //Devil Lock loading
     const [devilLock, setDevilLock] = React.useState([undefined]);
@@ -43,19 +44,17 @@ const Governance = (props) => {
 
     const inputRef = useRef()
     let account = props.account
-    // let web3Enabled = props.web3Enabled;
-    let web3Enabled = false;
   
    // window.web3 = new Web3(window.web3.currentProvider);
    useEffect(() => {
     // window.web3 = new Web3(getNetworkLibrary());
     console.log(window);
     if (account !== undefined){
-      web3Enabled = true;
+        setWeb3Enabled(true);
       // window.web3 = new Web3(window.web3 ? window.web3.currentProvider : provider);
       window.web3 = new Web3(window.web3 ? window.web3.currentProvider : walletconnect.walletConnectProvider);
     }
-    else web3Enabled = false;
+    else setWeb3Enabled(false);;
   }, [account]);
   
     useEffect(() => {
@@ -155,7 +154,7 @@ const Governance = (props) => {
           } 
       }
       init();
-    }, [account]);
+    }, [web3Enabled, account]);
     
     async function update() {
     

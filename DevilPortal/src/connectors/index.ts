@@ -9,7 +9,7 @@ import WalletConnectProvider from '@walletconnect/web3-provider';
 
 const NETWORK_URL = "https://bsc-dataseed.binance.org/";
 
-export const NETWORK_CHAIN_ID: number = parseInt("56");
+export const NETWORK_CHAIN_ID: number = parseInt("97");
 
 if (typeof NETWORK_URL === "undefined") {
   throw new Error(
