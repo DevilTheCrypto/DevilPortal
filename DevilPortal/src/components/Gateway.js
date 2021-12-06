@@ -7,7 +7,7 @@ import OnramperWidget from "@onramper/widget";
 import RwdAbi from "../remix_abis/RWD.json";
 import OnramperWidgetContainer from "./Onboarder.js"
 import RangeSliderDEVL from "./RangeSlider";
-import { getNetworkLibrary } from '../connectors/index';
+import { provider, walletconnect } from '../connectors/index';
 
 const Gateway = (props) => {
 
@@ -41,11 +41,19 @@ const Gateway = (props) => {
 
 
   let account = props.account
-  let web3Enabled = props.web3Enabled;
+  // let web3Enabled = props.web3Enabled;
+  let web3Enabled = false;
 
   // window.web3 = new Web3(window.web3.currentProvider);
   useEffect(() => {
-    window.web3 = new Web3(getNetworkLibrary());
+    // window.web3 = new Web3(getNetworkLibrary());
+    console.log(window);
+    if (account !== undefined){
+      web3Enabled = true;
+      // window.web3 = new Web3(window.web3 ? window.web3.currentProvider : provider);
+      window.web3 = new Web3(window.web3 ? window.web3.currentProvider : walletconnect.walletConnectProvider);
+    }
+    else web3Enabled = false;
   }, [account]);
 
   useEffect(() => {
@@ -54,8 +62,7 @@ const Gateway = (props) => {
 
         const web3 = window.web3;
         console.log(web3);
-        if (web3.eth !== undefined) {
-          web3Enabled = true;
+        if (web3Enabled) {
           const networkId = await web3.eth.net.getId();
           setNetworkId(networkId);
 
@@ -78,18 +85,15 @@ const Gateway = (props) => {
           );
           setDevilGateway(devilGateway);
           console.log(devilGateway);
-        }
-        
 
-        //Load our staking state and other account data
+          //Load our staking state and other account data
+          console.log("loading balances 1");
+          await getTokenBalance(devilToken);
 
-        if (account !== undefined){
-          let devilTokenBalance = await devilToken.methods.balanceOf(account).call();
-          setDevilTokenBalance(devilTokenBalance.toString());
-
-          let ethBalance = await web3.eth.getBalance(account);
-          setEthBalance(ethBalance);
-
+          await window.web3.eth.getBalance(account).then((ethBalance) => {
+            console.log("ethBalance", ethBalance);
+            setEthBalance(ethBalance);
+          });
           //event subscriptions that call update function to sync state variables w/ block chain
 
           devilGateway.events.DEVLPurchased({fromBlock: 0})
@@ -102,11 +106,22 @@ const Gateway = (props) => {
 
           const updateState = false
           setUpdateState(updateState)
-        } 
+        }
         
     }
     init();
   }, [account, devilTokenBalance, ethBalance]);
+
+  async function getTokenBalance(contract) {
+    console.log("getTokenBalance", contract, account);
+    try {
+      const devilTokenBalance = await contract.methods.balanceOf(account).call();
+      console.log("loading balances 2", devilTokenBalance);
+      setDevilTokenBalance(devilTokenBalance.toString());
+    } catch (error) {
+      console.log("catch", error);
+    }
+  }
     
   async function update() {
     

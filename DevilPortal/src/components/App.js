@@ -7,7 +7,6 @@ import { useWeb3React } from "@web3-react/core";
 import useAuth from "../hooks/useAuth";
 import { useWalletModal } from "@pancakeswap-libs/uikit";
 import Governance from "./Governance";
-import getWeb3Enabled from "./getWeb3";
 
 function App() {
 
@@ -68,7 +67,6 @@ function App() {
                         <Gateway
                           account={account}
                           web3={web3}
-                          web3Enabled={getWeb3Enabled()}
                         />  
                         {/* <Vault
                           account={account}
@@ -84,7 +82,6 @@ function App() {
                       <Vault
                           account={account}
                           web3={web3}
-                          web3Enabled={getWeb3Enabled()}
                         />
                     </div>
                     </div>
@@ -95,7 +92,6 @@ function App() {
                       <Governance 
                           account={account}
                           web3={web3}
-                          web3Enabled={getWeb3Enabled()}
                         />
                     </div>
                     </div>

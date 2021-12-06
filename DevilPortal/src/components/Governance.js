@@ -4,7 +4,7 @@ import Timer from './Timer';
 import DevilLockAbi from "../remix_abis/DevilLock.json";
 import TetherAbi from "../remix_abis/Tether.json";
 import DevilTokenAbi from "../remix_abis/DevilToken.json";
-import { getNetworkLibrary } from '../connectors/index';
+import { provider, walletconnect } from '../connectors/index';
 
 const Governance = (props) => {
 
@@ -43,11 +43,19 @@ const Governance = (props) => {
 
     const inputRef = useRef()
     let account = props.account
-    let web3Enabled = props.web3Enabled;
+    // let web3Enabled = props.web3Enabled;
+    let web3Enabled = false;
   
    // window.web3 = new Web3(window.web3.currentProvider);
    useEffect(() => {
-    window.web3 = new Web3(getNetworkLibrary());
+    // window.web3 = new Web3(getNetworkLibrary());
+    console.log(window);
+    if (account !== undefined){
+      web3Enabled = true;
+      // window.web3 = new Web3(window.web3 ? window.web3.currentProvider : provider);
+      window.web3 = new Web3(window.web3 ? window.web3.currentProvider : walletconnect.walletConnectProvider);
+    }
+    else web3Enabled = false;
   }, [account]);
   
     useEffect(() => {
@@ -55,8 +63,7 @@ const Governance = (props) => {
       const init = async () => {
   
         const web3 = window.web3;
-        if (web3.eth !== undefined) {
-            web3Enabled = true;
+        if (web3Enabled) {
             const networkId = await web3.eth.net.getId();
             setNetworkId(networkId);
     
@@ -69,7 +76,7 @@ const Governance = (props) => {
             devilLockAddress
             );
             setDevilLock(devilLock);
-            console.log(devilLock);
+            console.log("devilLock", devilLock);
             } catch (error) {
             alert(
                 'Failed to load Devil Lock.',
@@ -85,12 +92,9 @@ const Governance = (props) => {
             );
             setDevilToken(devilToken);
             console.log(devilToken);
-        }
-        
     
         //Load our staking state and other account data
-  
-          if (account !== undefined){
+          
             let votingActive = await devilLock.methods.getVotingActive().call()
             setVotingActive(votingActive)
 

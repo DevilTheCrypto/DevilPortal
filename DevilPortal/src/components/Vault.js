@@ -5,7 +5,7 @@ import DevilVaultAbi from "../remix_abis/DevilVault.json";
 import TetherAbi from "../remix_abis/Tether.json";
 import RwdAbi from "../remix_abis/RWD.json";
 import DevilTokenAbi from "../remix_abis/DevilToken.json";
-import { getNetworkLibrary } from "../connectors/index";
+import { provider, walletconnect } from "../connectors/index";
 
 const Vault = (props) => {
 
@@ -30,11 +30,17 @@ const Vault = (props) => {
   const inputRef = useRef();
 
   let account = props.account;
-  let web3Enabled = props.web3Enabled;
+  let web3Enabled = false;
   
   useEffect(() => {
-    window.web3 = new Web3(getNetworkLibrary());
-    console.log("web3 connected");
+    // window.web3 = new Web3(getNetworkLibrary());
+    console.log(window);
+    if (account !== undefined){
+      web3Enabled = true;
+      // window.web3 = new Web3(window.web3 ? window.web3.currentProvider : provider);
+      window.web3 = new Web3(window.web3 ? window.web3.currentProvider : walletconnect.walletConnectProvider);
+    }
+    else web3Enabled = false;
   }, [account]);
 
   useEffect(() => {
@@ -42,25 +48,24 @@ const Vault = (props) => {
     const init = async () => {
 
       const web3 = window.web3;
-      if (web3.eth !== undefined)
-      {
+      if (web3Enabled) {
         console.log("creating contract objects");
-        web3Enabled = true;
-        const networkId = await web3.eth.net.getId();
-        setNetworkId(networkId);
-
         try{
-
-        //LOAD Chad Vault
-        const devilVaultAddress = "0xe12f2f9Bf3939BCe8F41CAd1247924a0B2dda942";
-        setDevilVaultAddress(devilVaultAddress);
-        const devilVault = new web3.eth.Contract(
-          DevilVaultAbi,
-          devilVaultAddress
-        );
-        setDevilVault(devilVault);
-        console.log(devilVault);
+          console.log("devilVault try");
+          const networkId = await web3.eth.net.getId();
+          console.log("network id", networkId);
+          setNetworkId(networkId);
+          //LOAD Chad Vault
+          const devilVaultAddress = "0xe12f2f9Bf3939BCe8F41CAd1247924a0B2dda942";
+          setDevilVaultAddress(devilVaultAddress);
+          const devilVault = new web3.eth.Contract(
+            DevilVaultAbi,
+            devilVaultAddress
+          );
+          setDevilVault(devilVault);
+          console.log("devilVault", devilVault);
         } catch (error) {
+          console.log("devilVault Catch", error);
           alert(
             'Failed to load devil vault.',
                 );
@@ -84,13 +89,11 @@ const Vault = (props) => {
           rwdAddress
         );
         setRwd(rwd);
-        console.log(rwd);
-      }
-      
+        console.log("created contracts", rwd);
 
         //Load our staking state and other account data
 
-        if (account !== undefined){
+          console.log("loading data");
           let devilTokenBalance = await devilToken.methods.balanceOf(account).call();
           setDevilTokenBalance(devilTokenBalance.toString());
           
