@@ -4,6 +4,7 @@ import Timer from './Timer';
 import DevilLockAbi from "../remix_abis/DevilLock.json";
 import TetherAbi from "../remix_abis/Tether.json";
 import DevilTokenAbi from "../remix_abis/DevilToken.json";
+import { getNetworkLibrary } from '../connectors/index';
 
 const Governance = (props) => {
 
@@ -42,42 +43,50 @@ const Governance = (props) => {
 
     const inputRef = useRef()
     let account = props.account
+    let web3Enabled = props.web3Enabled;
   
-    window.web3 = new Web3(window.web3.currentProvider);
+   // window.web3 = new Web3(window.web3.currentProvider);
+   useEffect(() => {
+    window.web3 = new Web3(getNetworkLibrary());
+  }, [account]);
   
     useEffect(() => {
       
       const init = async () => {
   
         const web3 = window.web3;
-        const networkId = await web3.eth.net.getId();
-        setNetworkId(networkId);
-  
-        try{
-        //LOAD Devil lock
-        const devilLockAddress = "0xd39217757AfAFd226AeDCA1Bd20F34A97ECbeb50";
-        setDevilLockAddress(devilLockAddress);
-        const devilLock = new web3.eth.Contract(
-          DevilLockAbi,
-          devilLockAddress
-        );
-        setDevilLock(devilLock);
-        console.log(devilLock);
-        } catch (error) {
-          alert(
-            'Failed to load Devil Lock.',
-                );
-        }
+        if (web3.eth !== undefined) {
+            web3Enabled = true;
+            const networkId = await web3.eth.net.getId();
+            setNetworkId(networkId);
+    
+            try{
+            //LOAD Devil lock
+            const devilLockAddress = "0xd39217757AfAFd226AeDCA1Bd20F34A97ECbeb50";
+            setDevilLockAddress(devilLockAddress);
+            const devilLock = new web3.eth.Contract(
+            DevilLockAbi,
+            devilLockAddress
+            );
+            setDevilLock(devilLock);
+            console.log(devilLock);
+            } catch (error) {
+            alert(
+                'Failed to load Devil Lock.',
+                    );
+            }
 
-        //LOAD devilToken
-        const devilTokenAddress = "0xD280e0Fea29BcAe6ED9DD9fb4B9e5Fa90F5C249D";
-        setDevilTokenAddress(devilTokenAddress);
-        const devilToken = new web3.eth.Contract(
-          DevilTokenAbi,
-          devilTokenAddress
-        );
-        setDevilToken(devilToken);
-        console.log(devilToken);
+            //LOAD devilToken
+            const devilTokenAddress = "0xD280e0Fea29BcAe6ED9DD9fb4B9e5Fa90F5C249D";
+            setDevilTokenAddress(devilTokenAddress);
+            const devilToken = new web3.eth.Contract(
+            DevilTokenAbi,
+            devilTokenAddress
+            );
+            setDevilToken(devilToken);
+            console.log(devilToken);
+        }
+        
     
         //Load our staking state and other account data
   
@@ -274,7 +283,7 @@ const Governance = (props) => {
                         <div class="row row-30 justify-content-center">
                             <div class="col-4 justify-content-center">
                                 <form class="block block-sm justify-content-center" data-np-checked="1">
-                                    <p>Balance: {window.web3.utils.fromWei(devilTokenBalance, 'Ether')} </p>
+                                    <p>Balance: {web3Enabled ? window.web3.utils.fromWei(devilTokenBalance, 'Ether') : 0} </p>
                                     {/* <AmountForm /> */}
                                     {/* <input type="number" ref={inputRef} className="form-control"/> */}
                                         

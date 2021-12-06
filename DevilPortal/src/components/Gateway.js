@@ -7,6 +7,7 @@ import OnramperWidget from "@onramper/widget";
 import RwdAbi from "../remix_abis/RWD.json";
 import OnramperWidgetContainer from "./Onboarder.js"
 import RangeSliderDEVL from "./RangeSlider";
+import { getNetworkLibrary } from '../connectors/index';
 
 const Gateway = (props) => {
 
@@ -34,41 +35,51 @@ const Gateway = (props) => {
   const inputRef = useRef();
   const inputRef2 = useRef();
 
-  const APIKEY = process.env.REACT_APP_API_KEY
+  // const APIKEY = process.env.REACT_APP_API_KEY
+  const APIKEY = 'pk_prod_H2r9uOFoPvXZRouc0brXKBhL8jEYJKtivAgsAbLxUL40';
 
 
 
   let account = props.account
+  let web3Enabled = props.web3Enabled;
 
-  window.web3 = new Web3(window.web3.currentProvider);
+  // window.web3 = new Web3(window.web3.currentProvider);
+  useEffect(() => {
+    window.web3 = new Web3(getNetworkLibrary());
+  }, [account]);
 
   useEffect(() => {
     
     const init = async () => {
 
         const web3 = window.web3;
-        const networkId = await web3.eth.net.getId();
-        setNetworkId(networkId);
+        console.log(web3);
+        if (web3.eth !== undefined) {
+          web3Enabled = true;
+          const networkId = await web3.eth.net.getId();
+          setNetworkId(networkId);
 
-        //LOAD devilToken
-        const devilTokenAddress = "0xD280e0Fea29BcAe6ED9DD9fb4B9e5Fa90F5C249D";
-        setDevilTokenAddress(devilTokenAddress);
-        const devilToken = new web3.eth.Contract(
-          DevilTokenAbi,
-          devilTokenAddress
-        );
-        setDevilToken(devilToken);
-        console.log(devilToken);
+          //LOAD devilToken
+          const devilTokenAddress = "0xD280e0Fea29BcAe6ED9DD9fb4B9e5Fa90F5C249D";
+          setDevilTokenAddress(devilTokenAddress);
+          const devilToken = new web3.eth.Contract(
+            DevilTokenAbi,
+            devilTokenAddress
+          );
+          setDevilToken(devilToken);
+          console.log(devilToken);
 
-        //LOAD devil gateway
-        const devilGatewayAddress = "0x1C781CE11522dCDCc1C082606Eb3c67231624FEd";
-        setDevilGatewayAddress(devilGatewayAddress);
-        const devilGateway = new web3.eth.Contract(
-          DevilGatewayAbi,
-          devilGatewayAddress
-        );
-        setDevilGateway(devilGateway);
-        console.log(devilGateway);
+          //LOAD devil gateway
+          const devilGatewayAddress = "0x1C781CE11522dCDCc1C082606Eb3c67231624FEd";
+          setDevilGatewayAddress(devilGatewayAddress);
+          const devilGateway = new web3.eth.Contract(
+            DevilGatewayAbi,
+            devilGatewayAddress
+          );
+          setDevilGateway(devilGateway);
+          console.log(devilGateway);
+        }
+        
 
         //Load our staking state and other account data
 
@@ -164,7 +175,7 @@ const sellDevl = (amount) => {
                         </div>
                         <div>
                           <p style={{ textAlign: 'center' }}>Balance</p>  
-                          <p style={{ textAlign: 'center' }}>{parseFloat(window.web3.utils.fromWei(devilTokenBalance, 'Ether')).toFixed(5)} DEVL</p>
+                          <p style={{ textAlign: 'center' }}>{web3Enabled ? parseFloat(window.web3.utils.fromWei(devilTokenBalance, 'Ether')).toFixed(5) : 0} DEVL</p>
                         </div>
                     </div>
                     <div class="col-4 justify-content-center">
@@ -192,7 +203,7 @@ const sellDevl = (amount) => {
                         </div>
                         <div>
                           <p style={{ textAlign: 'center' }}>Balance</p>
-                          <p style={{ textAlign: 'center' }}>{parseFloat(window.web3.utils.fromWei(ethBalance, 'Ether')).toFixed(5)} BNB</p>
+                          <p style={{ textAlign: 'center' }}>{web3Enabled ? parseFloat(window.web3.utils.fromWei(ethBalance, 'Ether')).toFixed(5) : 0} BNB</p>
                         </div>
                     </div>
                     <div class="col-2 justify-content-center">

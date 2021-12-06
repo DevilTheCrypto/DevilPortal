@@ -5,6 +5,7 @@ import DevilVaultAbi from "../remix_abis/DevilVault.json";
 import TetherAbi from "../remix_abis/Tether.json";
 import RwdAbi from "../remix_abis/RWD.json";
 import DevilTokenAbi from "../remix_abis/DevilToken.json";
+import { getNetworkLibrary } from "../connectors/index";
 
 const Vault = (props) => {
 
@@ -28,34 +29,42 @@ const Vault = (props) => {
   const [updateState, setUpdateState] = React.useState(false);
   const inputRef = useRef();
 
-  let account = props.account
+  let account = props.account;
+  let web3Enabled = props.web3Enabled;
   
-  window.web3 = new Web3(window.web3.currentProvider);
+  useEffect(() => {
+    window.web3 = new Web3(getNetworkLibrary());
+    console.log("web3 connected");
+  }, [account]);
 
   useEffect(() => {
     
     const init = async () => {
 
       const web3 = window.web3;
-      const networkId = await web3.eth.net.getId();
-      setNetworkId(networkId);
+      if (web3.eth !== undefined)
+      {
+        console.log("creating contract objects");
+        web3Enabled = true;
+        const networkId = await web3.eth.net.getId();
+        setNetworkId(networkId);
 
-      try{
+        try{
 
-      //LOAD Chad Vault
-      const devilVaultAddress = "0x42B852a2F28B305B947A6C9a6bA44d6f7C759ff0";
-      setDevilVaultAddress(devilVaultAddress);
-      const devilVault = new web3.eth.Contract(
-        DevilVaultAbi,
-        devilVaultAddress
-      );
-      setDevilVault(devilVault);
-      console.log(devilVault);
-      } catch (error) {
-        alert(
-          'Failed to load devil vault.',
-              );
-      }
+        //LOAD Chad Vault
+        const devilVaultAddress = "0x42B852a2F28B305B947A6C9a6bA44d6f7C759ff0";
+        setDevilVaultAddress(devilVaultAddress);
+        const devilVault = new web3.eth.Contract(
+          DevilVaultAbi,
+          devilVaultAddress
+        );
+        setDevilVault(devilVault);
+        console.log(devilVault);
+        } catch (error) {
+          alert(
+            'Failed to load devil vault.',
+                );
+        }
 
         //LOAD devilToken
         const devilTokenAddress = "0xD280e0Fea29BcAe6ED9DD9fb4B9e5Fa90F5C249D";
@@ -76,6 +85,8 @@ const Vault = (props) => {
         );
         setRwd(rwd);
         console.log(rwd);
+      }
+      
 
         //Load our staking state and other account data
 
@@ -182,7 +193,7 @@ const Vault = (props) => {
                         <div class="h3">
                             TOTAL STAKED   
                         </div>
-                            <p> {parseFloat(window.web3.utils.fromWei(globalStakingBalance, 'Ether')).toFixed(5)} DEVL </p>
+                            <p> {web3Enabled ? parseFloat(window.web3.utils.fromWei(globalStakingBalance, 'Ether')).toFixed(5) : 0} DEVL </p>
                     </div>
                     <div class="col-4 justify-content-center">
                         <img class="mt-xxl-4" src="assets/media/DEVIL_logo_red_centered.png" alt="" width="674" height="572"/>
@@ -191,7 +202,7 @@ const Vault = (props) => {
                             <div class="h3" style={{ textAlign: 'right' }}>
                               TOTAL REWARDS   
                             </div>
-                                <p style={{ textAlign: 'right' }}>{parseFloat(window.web3.utils.fromWei(lifetimeRewardsGiven, 'Ether')).toFixed(5)} BUSD </p>
+                                <p style={{ textAlign: 'right' }}>{web3Enabled ? parseFloat(window.web3.utils.fromWei(lifetimeRewardsGiven, 'Ether')).toFixed(5) : 0} BUSD </p>
                         </div>
                 </div>
                 <div class="row row-30 justify-content-center">
@@ -200,11 +211,11 @@ const Vault = (props) => {
                             USER 
                             STAKED   
                         </div>
-                            <p> {parseFloat(window.web3.utils.fromWei(amountStaked, 'Ether')).toFixed(5)} DEVL </p>
+                            <p> {web3Enabled ? parseFloat(window.web3.utils.fromWei(amountStaked, 'Ether')).toFixed(5) : 0} DEVL </p>
                     </div>
                     <div class="col-4 justify-content-center">
                         <form class="block block-sm" data-np-checked="1">
-                            <p>Balance: {parseFloat(window.web3.utils.fromWei(devilTokenBalance, 'Ether')).toFixed(5)}</p>
+                            <p>Balance: {web3Enabled ? parseFloat(window.web3.utils.fromWei(devilTokenBalance, 'Ether')).toFixed(5) : 0}</p>
                             <input type="number" ref={inputRef} className="form-control" />
                                 
                                 <button 
@@ -246,7 +257,7 @@ const Vault = (props) => {
                             <div class="h3" style={{ textAlign: 'right' }}>
                                 USER REWARDS   
                             </div>
-                                <p style={{ textAlign: 'right' }}> {parseFloat(window.web3.utils.fromWei(pendingUserRewards, 'Ether')).toFixed(5)} BUSD </p>
+                                <p style={{ textAlign: 'right' }}> {web3Enabled ? parseFloat(window.web3.utils.fromWei(pendingUserRewards, 'Ether')).toFixed(5) : 0} BUSD </p>
                         </div>
                 </div>
                 {/* <div class="row row-30 justify-content-left">
