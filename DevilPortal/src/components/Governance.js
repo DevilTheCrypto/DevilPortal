@@ -47,11 +47,8 @@ const Governance = (props) => {
   
    // window.web3 = new Web3(window.web3.currentProvider);
    useEffect(() => {
-    // window.web3 = new Web3(getNetworkLibrary());
-    console.log(window);
     if (account !== undefined){
         setWeb3Enabled(true);
-      // window.web3 = new Web3(window.web3 ? window.web3.currentProvider : provider);
       window.web3 = new Web3(window.web3 ? window.web3.currentProvider : walletconnect.walletConnectProvider);
     }
     else setWeb3Enabled(false);;
@@ -75,7 +72,6 @@ const Governance = (props) => {
             devilLockAddress
             );
             setDevilLock(devilLock);
-            console.log("devilLock", devilLock);
             } catch (error) {
             alert(
                 'Failed to load Devil Lock.',
@@ -154,7 +150,7 @@ const Governance = (props) => {
           } 
       }
       init();
-    }, [web3Enabled, account]);
+    }, [web3Enabled]);
     
     async function update() {
     

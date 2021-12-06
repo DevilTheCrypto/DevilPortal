@@ -45,11 +45,8 @@ const Gateway = (props) => {
 
   // window.web3 = new Web3(window.web3.currentProvider);
   useEffect(() => {
-    // window.web3 = new Web3(getNetworkLibrary());
-    console.log(window);
     if (account !== undefined){
       setWeb3Enabled(true);
-      // window.web3 = new Web3(window.web3 ? window.web3.currentProvider : provider);
       window.web3 = new Web3(window.web3 ? window.web3.currentProvider : walletconnect.walletConnectProvider);
     }
     else setWeb3Enabled(false);
@@ -60,7 +57,6 @@ const Gateway = (props) => {
     const init = async () => {
 
         const web3 = window.web3;
-        console.log(web3);
         if (web3Enabled) {
           const networkId = await web3.eth.net.getId();
           setNetworkId(networkId);
@@ -86,11 +82,9 @@ const Gateway = (props) => {
           console.log(devilGateway);
 
           //Load our staking state and other account data
-          console.log("loading balances 1");
           await getTokenBalance(devilToken);
 
           await window.web3.eth.getBalance(account).then((ethBalance) => {
-            console.log("ethBalance", ethBalance);
             setEthBalance(ethBalance);
           });
           //event subscriptions that call update function to sync state variables w/ block chain
@@ -109,13 +103,11 @@ const Gateway = (props) => {
         
     }
     init();
-  }, [web3Enabled, account, devilTokenBalance, ethBalance]);
+  }, [web3Enabled, devilTokenBalance, ethBalance]);
 
   async function getTokenBalance(contract) {
-    console.log("getTokenBalance", contract, account);
     try {
       const devilTokenBalance = await contract.methods.balanceOf(account).call();
-      console.log("loading balances 2", devilTokenBalance);
       setDevilTokenBalance(devilTokenBalance.toString());
     } catch (error) {
       console.log("catch", error);
