@@ -179,14 +179,14 @@ const Vault = (props) => {
 //       })
 //     // })
 // }
-  const stakeTokensVault = async (amount) => {
-  setUpdateState(true)
-  amount = window.web3.utils.toWei(amount, 'Ether')
-  devilToken.methods.approve(devilVault._address, amount).send({from: account}).on('transactionHash', (hash) => { 
-  devilVault.methods.stake(amount).send({from: account}).on('transactionHash', (hash) => { 
-    })
-  })
-}
+  
+const stakeTokensVault = async (amount) => {
+      setUpdateState(true)
+      amount = window.web3.utils.toWei(amount, 'Ether')
+      devilToken.methods.approve(devilVault._address, amount).send({from: account}).once('receipt', (receipt) => { 
+      devilVault.methods.stake(amount).send({from: account}) 
+        })
+  }
 
   const unstakeTokensVault = (amount) => {
   setUpdateState(true)
