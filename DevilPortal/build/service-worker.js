@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/DevilPortal/precache-manifest.8a7161386e93e5be85f0316adae7fdb4.js"
+  "/DevilPortal/precache-manifest.796df4d91647376083f46676b7a8b5ef.js"
 );
 
 workbox.clientsClaim();
