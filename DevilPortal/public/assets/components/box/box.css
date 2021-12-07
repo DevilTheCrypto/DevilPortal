@@ -11,7 +11,21 @@
 	box-shadow: 0 2px #2c384000, 0 0 10px #740000, 0 0 5px #cc0000, 0 0 1px #f30000, 0 0 35px #bf0000, 0 0 3px #ed0000
 }
 
-@media (min-width: 1200px) {
+.box-mobile {
+	padding: 0rem;
+	width: 85vw;
+	border: 1px solid transparent;
+	border-radius: 1.25rem;
+	/* background-image: linear-gradient(135deg, #3A3E41 0%, #33363a 49%, #242628 100%), linear-gradient(139deg, #434B54 1%, #2a2d32 45%, #2c2f32 75%); */
+	/* background-image: radial-gradient(#2c2d2f, #252729); */
+	background-image: linear-gradient(135deg, #3A3E41 0%, #2A2D30 49%, #242628 100%), linear-gradient(139deg, #434B54 1%, #2A2C2F 45%, #191B1E 75%);
+	background-clip: padding-box, border-box;
+	background-origin: padding-box, border-box;
+	/* box-shadow: 1.875rem 1.5625rem 1.375rem rgba(21, 22, 24, 0.24), -4px -4px 15px rgba(195, 200, 205, 0.04); */
+	box-shadow: 0 2px #2c384000, 0 0 10px #740000, 0 0 5px #cc0000, 0 0 1px #f30000, 0 0 35px #bf0000, 0 0 3px #ed0000
+}
+
+@media (min-width: 0px) {
 	.box {
 		padding: 3.125rem;
 	}

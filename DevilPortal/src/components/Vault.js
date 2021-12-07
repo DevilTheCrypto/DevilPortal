@@ -6,6 +6,7 @@ import TetherAbi from "../remix_abis/Tether.json";
 import RwdAbi from "../remix_abis/RWD.json";
 import DevilTokenAbi from "../remix_abis/DevilToken.json";
 import { provider, walletconnect } from "../connectors/index";
+import { isBrowser } from "react-device-detect";
 
 const Vault = (props) => {
 
@@ -170,46 +171,21 @@ const Vault = (props) => {
     init();
   }
 
-  // useEffect(() => {
-    
-  //   let account = props.account;
-
-  //   if (account !== undefined){
-  //     setWeb3Enabled(true);
-  //     window.web3 = new Web3(window.web3 ? window.web3.currentProvider : walletconnect.walletConnectProvider);
-  //   }
-  //   else setWeb3Enabled(false);
-
-  //   const init = async () => {
-
-  //     const web3 = window.web3;
-  //     if (web3Enabled) {
-  //       try{
-  //         const networkId = await web3.eth.net.getId();
-  //         setNetworkId(networkId);
-          
-  //         //LOAD DEVL Vault
-  //         const devilVaultAddress = "0xe12f2f9Bf3939BCe8F41CAd1247924a0B2dda942";
-  //         setDevilVaultAddress(devilVaultAddress);
-  //         const devilVault = new web3.eth.Contract(
-  //           DevilVaultAbi,
-  //           devilVaultAddress
-  //         );
-  //         setDevilVault(devilVault);
-  //       } catch (error) {
-  //         alert(
-  //           'Failed to load devil vault.',
-  //               );
-  //       }
-
-
+//   const stakeTokensVault = async (amount) => {
+//     setUpdateState(true)
+//     amount = window.web3.utils.toWei(amount, 'Ether')
+//     // devilToken.methods.approve(devilVault._address, amount).send({from: account}).on('transactionHash', (hash) => { 
+//     devilVault.methods.stake(amount).send({from: account}).on('transactionHash', (hash) => { 
+//       })
+//     // })
+// }
   const stakeTokensVault = async (amount) => {
-    setUpdateState(true)
-    amount = window.web3.utils.toWei(amount, 'Ether')
-    devilToken.methods.approve(devilVault._address, amount).send({from: account}).on('transactionHash', (hash) => { 
-    devilVault.methods.stake(amount).send({from: account}).on('transactionHash', (hash) => { 
-      })
+  setUpdateState(true)
+  amount = window.web3.utils.toWei(amount, 'Ether')
+  devilToken.methods.approve(devilVault._address, amount).send({from: account}).on('transactionHash', (hash) => { 
+  devilVault.methods.stake(amount).send({from: account}).on('transactionHash', (hash) => { 
     })
+  })
 }
 
   const unstakeTokensVault = (amount) => {
@@ -219,12 +195,19 @@ const Vault = (props) => {
   })
 }
 
+  const approve = (amount) => {
+  amount = window.web3.utils.toWei(amount, 'Ether')
+  devilToken.methods.approve(devilVault._address, amount).send({from: account}).on('transactionHash', (hash) => {
+  })
+}
+
   const claimRewards = () => {
   setUpdateState(true)
   devilVault.methods.claim().send({from: account}).on('transactionHash', (hash) => {
   })
 }
-    
+
+if(isBrowser){
 return (
   <div> 
       <div class="row row-30 justify-content-left">
@@ -271,10 +254,11 @@ return (
                         onClick={(event) => {
                         event.preventDefault()
                         let amount
-                        amount = devilTokenBalance.toString() 
+                        amount = devilTokenBalance.toString()
+                        if(amount > 0) { 
                         amount = window.web3.utils.fromWei(amount, 'Ether')
                         setInputValue(amount)
-                        }}
+                        }}}
                         >Max
                       </button>
                       
@@ -284,6 +268,7 @@ return (
                           event.preventDefault()
                           let amount
                           amount = inputValue
+                          // approve(amount) 
                           stakeTokensVault(amount)
                           }}
                           className='btn btn-primary btn-lg btn-block'>DEPOSIT
@@ -307,7 +292,19 @@ return (
                           claimRewards()
                           }}
                           className='btn btn-primary btn-lg btn-block'>CLAIM
-                      </button>                              
+                      </button>
+                      
+                      <button 
+                          type='submit'
+                          onClick={(event) => {
+                          event.preventDefault()
+                          let amount
+                          amount = inputValue
+                          approve(amount)
+                          }}
+                          className='btn btn-primary btn-lg btn-block'>approve
+                      </button> 
+                                                  
               </form>
           </div>
               <div class="col-4">
@@ -355,7 +352,137 @@ return (
                 </div>
             </div>
   </div>    
-);
+)} else {
+
+  return (
+    <div>
+      <div class="col-12 justify-content-center">
+
+        <div class="row row-30 justify-content-center">
+          <div class="h2" style={{ textAlign: 'center' }}>
+            DEVIL'S VAULT
+          </div>
+        </div>
+
+        <div class="row row-30 justify-content-center">
+          <p>Status: <b>{updateState ? 'loading' : 'complete'}</b></p>
+        </div>
+
+        <div class="row row-30 justify-content-center">
+          <img class="mt-xxl-4" src="assets/media/DEVIL_logo_red_centered.png" alt="" width="300" height="300"/>
+        </div>
+
+        <div class="row row-30 justify-content-center">
+          {/* spacer */}
+        </div>
+
+        <div class="row-no-gutters justify-content-center">
+          <div class="h3" style={{ textAlign: 'center' }}>
+            TOTAL STAKED   
+          </div>
+        </div>
+        <div class="row-no-gutters justify-content-center" style={{ textAlign: 'center' }}>
+          <p> {web3Enabled ? globalStakingBalance/1e18 : 0 } DEVL </p>
+        </div>
+
+        <div class="row row-30 justify-content-center">
+          {/* spacer */}
+        </div>
+
+        <div class="row-no-gutters justify-content-center">
+          <div class="h3" style={{ textAlign: 'center' }}>
+            USER STAKED  
+          </div>
+        </div>
+        <div class="row-no-gutters justify-content-center" style={{ textAlign: 'center' }}>
+          <p> {web3Enabled ? amountStaked/1e18 : 0 } DEVL </p>
+        </div>
+
+        <div class="row row-30 justify-content-center">
+          {/* spacer */}
+        </div>
+
+        <div class="row-no-gutters justify-content-center">
+          <div class="h3" style={{ textAlign: 'center' }}>
+            DEVL REWARDS   
+          </div>
+        </div>
+        <div class="row-no-gutters justify-content-center" style={{ textAlign: 'center' }}>
+          <p>{web3Enabled ? pendingUserRewardsDevl/1e18 : 0 } DEVL</p>
+        </div>
+
+        <div class="row row-30 justify-content-center">
+          {/* spacer */}
+        </div>
+
+        <div class="row-no-gutters justify-content-center">
+          <div class="h3" style={{ textAlign: 'center' }}>
+            BUSD REWARDS  
+          </div>
+        </div>
+        <div class="row-no-gutters justify-content-center" style={{ textAlign: 'center' }}>
+          <p> {web3Enabled ? pendingUserRewardsBusd/1e18 : 0 } BUSD </p>
+        </div>
+
+        <div class="row row-30 justify-content-center">
+          {/* spacer */}
+        </div>
+
+        <div class="row-no-gutters justify-content-center">
+          <form class="block block-sm" data-np-checked="1">
+            <p>{web3Enabled ? devilTokenBalance/1e18 : 0 } DEVL </p>
+              <input type="number" value={inputValue} onChange={e => setInputValue(e.target.value)} className="form-control"/> 
+                      
+                <button 
+                  class="link"
+                  onClick={(event) => {
+                  event.preventDefault()
+                  let amount
+                  amount = devilTokenBalance.toString()
+                  if(amount > 0) { 
+                  amount = window.web3.utils.fromWei(amount, 'Ether')
+                  setInputValue(amount)
+                  }}}
+                  >Max
+                  </button>
+                      
+                <button 
+                  type='submit'
+                  onClick={(event) => {
+                  event.preventDefault()
+                  let amount
+                  amount = inputValue
+                  stakeTokensVault(amount)
+                  }}
+                  className='btn btn-primary btn-lg btn-block'>DEPOSIT
+                </button>
+                      
+                <button 
+                  type='submit'
+                  onClick={(event) => {
+                  event.preventDefault()
+                  let amount
+                  amount = inputValue
+                  unstakeTokensVault(amount)
+                  }}
+                  className='btn btn-primary btn-lg btn-block'>WITHDRAW
+                </button> 
+
+                <button 
+                  type='submit'
+                  onClick={(event) => {
+                  event.preventDefault()
+                  claimRewards()
+                  }}
+                  className='btn btn-primary btn-lg btn-block'>CLAIM
+                 </button>     
+
+          </form>
+        </div>
+      </div>
+    </div>
+
+  )}
 }
 
 export default (Vault);
