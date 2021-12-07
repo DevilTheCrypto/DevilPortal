@@ -1,7 +1,7 @@
 {
-  "homepage": "http://DevilTheCrypto.github.io/DevilPortal",
+  "homepage": "https://DevilTheCrypto.github.io/DevilPortal",
   "name": "DevilPortal",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "DeFi Token Staking & Governance App",
   "author": "Mephisto",
   "dependencies": {
